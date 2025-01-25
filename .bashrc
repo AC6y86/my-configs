@@ -104,6 +104,6 @@ alias cd_libovrplatform='cd /mnt/c/open/fbsource/arvr/projects/platform-sdk/1stP
 alias cd_user='cd /mnt/c/Users/joepaley'
 
 alias open='xdg-open'
-alias ssh_local='function _ssh_local(){ ssh root@$1.joepaley; }; _ssh_local'
+alias ssh_local='python3 ~/my-configs/ssh_local.py'
 
 
