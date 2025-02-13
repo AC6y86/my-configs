@@ -105,5 +105,10 @@ alias cd_user='cd /mnt/c/Users/joepaley'
 
 alias open='xdg-open'
 alias ssh_local='python3 ~/my-configs/ssh_local.py'
+alias adb_win='/mnt/c/tools/maui/bin/platform-tools/adb.exe'
 
+
+export PATH="$PATH:~/joepaley/AppData/Local/Programs/cursor/resources/app/bin"
+
+source ~/.bashrc_local
 
