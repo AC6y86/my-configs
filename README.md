@@ -8,3 +8,5 @@ ln -s my-configs/.bashrc
 cd ~/
 ln -s /mnt/c/Users/joepaley/
 
+# save git credentials
+git config --global credential.helper store
