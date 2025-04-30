@@ -55,9 +55,34 @@ def get_username():
 def connect_to_server(username, hostname):
     """Connect to the server via SSH"""
     resolved_hostname = resolve_hostname(hostname)
+
+    def add_ssh_config_entry(original, resolved, username):
+        ssh_config_path = os.path.expanduser("~/.ssh/config")
+        entry = f"Host {original}\n    HostName {resolved}\n    User {username}\n"
+        try:
+            # Check if entry already exists
+            if os.path.exists(ssh_config_path):
+                with open(ssh_config_path, 'r') as f:
+                    config = f.read()
+                    if f"Host {original}" in config:
+                        print(f"SSH config already has entry for {original}.")
+                        return
+            # Append the entry
+            with open(ssh_config_path, 'a') as f:
+                f.write('\n' + entry)
+            print(f"Added SSH config entry for {original} -> {resolved} with user {username}.")
+        except Exception as e:
+            print(f"Error updating SSH config: {e}")
+
     try:
         # Attempt to SSH into the server
         subprocess.run(["ssh", "-o", "BatchMode=yes", f"{username}@{resolved_hostname}"], check=True)
+        add_ssh_config_entry(hostname, resolved_hostname, username)
+        try:
+            subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
+            print("Called sync_ssh_to_windows_symlink.sh after successful SSH and config update.")
+        except Exception as e:
+            print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
     except subprocess.CalledProcessError as e:
         if e.returncode == 255:  # Permission denied
             print(f"Permission denied for {username}@{resolved_hostname}")
@@ -65,7 +90,19 @@ def connect_to_server(username, hostname):
             subprocess.run(["ssh-copy-id", f"{username}@{resolved_hostname}"], check=True)
             print("Trying SSH again...")
             subprocess.run(["ssh", "-o", "BatchMode=yes", f"{username}@{resolved_hostname}"], check=True)
+            add_ssh_config_entry(hostname, resolved_hostname, username)
+            try:
+                subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
+                print("Called sync_ssh_to_windows_symlink.sh after successful SSH and config update.")
+            except Exception as e:
+                print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
         else:
+            add_ssh_config_entry(hostname, resolved_hostname, username)
+            try:
+                subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
+                print("Called sync_ssh_to_windows_symlink.sh after successful SSH and config update.")
+            except Exception as e:
+                print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
             print(f"Failed to connect to {username}@{resolved_hostname}")
 
 def main():
