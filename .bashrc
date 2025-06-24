@@ -105,11 +105,15 @@ alias cd_user='cd /mnt/c/Users/joepaley'
 
 alias open='xdg-open'
 alias ssh_local='python3 ~/my-configs/ssh_local.py'
-alias adb='/mnt/c/tools/maui/bin/platform-tools/adb.exe'
+if [ -x /mnt/c/tools/maui/bin/platform-tools/adb.exe ]; then
+  alias adb="cmd.exe /c C:\\tools\\maui\\bin\\platform-tools\\adb.exe"
+elif [ -x /home/joepaley/joepaley/AppData/Local/Android/sdk/platform-tools/adb.exe ]; then
+  alias adb="/home/joepaley/joepaley/AppData/Local/Android/sdk/platform-tools/adb.exe"
+fi
+
+
 alias wf="~/my-configs/windsurf-launcher.sh ."
 
-
-export PATH="$PATH:~/joepaley/AppData/Local/Programs/cursor/resources/app/bin"
 
 # scaling for wsl gui apps
 export GDK_SCALE=1
@@ -121,3 +125,4 @@ export ANDROID_HOME=/mnt/c/Users/joepaley/AppData/Local/Android/Sdk
 
 # keep this last
 source ~/.bashrc_local
+export PATH=~/.npm-global/bin:$PATH
