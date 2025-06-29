@@ -35,9 +35,8 @@ def get_username():
     except FileNotFoundError:
         previous_username = None
 
-    if len(sys.argv) == 1 and previous_username:
-        print(f"Using previous username: {previous_username}")
-        print(f"Using previous hostname: {get_hostname()}")
+    if previous_username:
+        print(f"Using cached username: {previous_username}")
         return previous_username
 
     print("Select a username:")
@@ -73,10 +72,19 @@ def connect_to_server(username, hostname):
             print(f"Added SSH config entry for {original} -> {resolved} with user {username}.")
         except Exception as e:
             print(f"Error updating SSH config: {e}")
+    
+    def cache_username(username):
+        """Cache the username after successful connection"""
+        try:
+            with open(USERNAME_FILE, "w") as f:
+                f.write(username)
+        except Exception as e:
+            print(f"Warning: Failed to cache username: {e}")
 
     try:
         # Attempt to SSH into the server
         subprocess.run(["ssh", "-o", "BatchMode=yes", f"{username}@{resolved_hostname}"], check=True)
+        cache_username(username)  # Cache username after successful connection
         add_ssh_config_entry(hostname, resolved_hostname, username)
         try:
             subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
@@ -90,6 +98,7 @@ def connect_to_server(username, hostname):
             subprocess.run(["ssh-copy-id", f"{username}@{resolved_hostname}"], check=True)
             print("Trying SSH again...")
             subprocess.run(["ssh", "-o", "BatchMode=yes", f"{username}@{resolved_hostname}"], check=True)
+            cache_username(username)  # Cache username after successful connection
             add_ssh_config_entry(hostname, resolved_hostname, username)
             try:
                 subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
@@ -111,8 +120,6 @@ def main():
         with open(HOSTNAME_FILE, "w") as f:
             f.write(hostname)
         username = get_username()
-        with open(USERNAME_FILE, "w") as f:
-            f.write(username)
         connect_to_server(username, hostname)
     except ValueError as e:
         print(f"Error: {e}")
