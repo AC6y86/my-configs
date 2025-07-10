@@ -5,27 +5,26 @@
 
 echo "=== ADB WiFi Connector ==="
 
-# Check if adb is installed
-if ! command -v adb &> /dev/null; then
+# Define ADB command - check for Windows executable path first
+if [ -f "/home/joepaley/joepaley/AppData/Local/Android/sdk/platform-tools/adb.exe" ]; then
+    ADB="/home/joepaley/joepaley/AppData/Local/Android/sdk/platform-tools/adb.exe"
+elif command -v adb &> /dev/null; then
+    ADB="adb"
+else
     echo "Error: ADB is not installed. Please install Android SDK platform-tools."
     exit 1
 fi
 
-# Check if IP address was provided
+# Check if IP address was provided, use default if not
 if [ $# -eq 0 ]; then
-    echo "Error: No IP address provided."
-    echo ""
-    echo "Usage: $0 <DEVICE_IP_ADDRESS> [PORT]"
-    echo "Example: $0 192.168.1.100"
-    echo "Example: $0 192.168.1.100 5555"
-    echo ""
-    echo "Default port is 5555 if not specified."
-    exit 1
+    echo "No IP address provided. Using default: 192.168.1.183"
+    device_ip="192.168.1.183"
+    port="5555"
+else
+    # Get IP address and port
+    device_ip="$1"
+    port="${2:-5555}"
 fi
-
-# Get IP address and port
-device_ip="$1"
-port="${2:-5555}"
 
 # Validate IP address format (basic check)
 if ! [[ "$device_ip" =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
@@ -35,15 +34,15 @@ fi
 
 # Save current device list
 echo "Saving current device list..."
-devices_before=$(adb devices | grep -E "device$" | wc -l)
+devices_before=$($ADB devices | grep -E "device$" | wc -l)
 
 # Disconnect any existing connection to this IP (in case of stale connection)
 echo "Cleaning up any existing connections to $device_ip..."
-adb disconnect "$device_ip:$port" &> /dev/null
+$ADB disconnect "$device_ip:$port" &> /dev/null
 
 # Connect to the device
 echo "Connecting to $device_ip:$port..."
-connection_output=$(adb connect "$device_ip:$port" 2>&1)
+connection_output=$($ADB connect "$device_ip:$port" 2>&1)
 echo "$connection_output"
 
 # Check if connection was successful
@@ -54,13 +53,13 @@ if [[ "$connection_output" == *"connected to"* ]] || [[ "$connection_output" == 
     # Verify the device is listed
     echo ""
     echo "Verifying connection..."
-    if adb devices | grep -q "$device_ip:$port.*device$"; then
+    if $ADB devices | grep -q "$device_ip:$port.*device"; then
         echo "SUCCESS! Connected to device at $device_ip:$port"
         echo ""
         
         # Get device info
-        device_info=$(adb -s "$device_ip:$port" shell getprop ro.product.model 2>/dev/null)
-        android_version=$(adb -s "$device_ip:$port" shell getprop ro.build.version.release 2>/dev/null)
+        device_info=$($ADB -s "$device_ip:$port" shell getprop ro.product.model 2>/dev/null)
+        android_version=$($ADB -s "$device_ip:$port" shell getprop ro.build.version.release 2>/dev/null)
         
         if [ -n "$device_info" ]; then
             echo "Device Model: $device_info"
@@ -69,16 +68,16 @@ if [[ "$connection_output" == *"connected to"* ]] || [[ "$connection_output" == 
         
         echo ""
         echo "You can now use ADB commands with this device:"
-        echo "  adb -s $device_ip:$port <command>"
+        echo "  $ADB -s $device_ip:$port <command>"
         echo ""
         echo "Or if it's the only device connected:"
-        echo "  adb <command>"
+        echo "  $ADB <command>"
         echo ""
         echo "To disconnect, run:"
-        echo "  adb disconnect $device_ip:$port"
+        echo "  $ADB disconnect $device_ip:$port"
         
         # Save connection for easy reconnection
-        config_dir="$HOME/.adb_wifi_configs"
+        config_dir="$HOME/.$ADB_wifi_configs"
         mkdir -p "$config_dir"
         echo "$device_ip:$port" > "$config_dir/last_device"
         echo ""
@@ -105,6 +104,6 @@ else
     echo ""
     echo "If the device was restarted, you'll need to:"
     echo "1. Connect it via USB to Machine 1"
-    echo "2. Run enable_adb_wifi.sh again"
+    echo "2. Run enable_$ADB_wifi.sh again"
     exit 1
 fi
