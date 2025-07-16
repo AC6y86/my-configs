@@ -105,13 +105,6 @@ alias cd_user='cd /mnt/c/Users/joepaley'
 
 alias open='xdg-open'
 alias ssh_local='python3 ~/my-configs/ssh_local.py'
-if [ -x /mnt/c/tools/maui/bin/platform-tools/adb.exe ]; then
-  alias adb="/mnt/c/tools/maui/bin/platform-tools/adb.exe"
-elif [ -x /home/joepaley/joepaley/AppData/Local/Android/sdk/platform-tools/adb.exe ]; then
-  alias adb="/home/joepaley/joepaley/AppData/Local/Android/sdk/platform-tools/adb.exe"
-fi
-
-
 
 alias wf="~/my-configs/windsurf-launcher.sh ."
 
@@ -126,4 +119,4 @@ export ANDROID_HOME=/mnt/c/Users/joepaley/AppData/Local/Android/Sdk
 
 # keep this last
 source ~/.bashrc_local
-export PATH=~/.npm-global/bin:$PATH
+export PATH=~/.npm-global/bin:~/my-configs/bin:$PATH

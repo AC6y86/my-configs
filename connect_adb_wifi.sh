@@ -18,7 +18,7 @@ fi
 # Check if IP address was provided, use default if not
 if [ $# -eq 0 ]; then
     echo "No IP address provided. Using default: 192.168.1.183"
-    device_ip="192.168.1.183"
+    device_ip="192.168.1.194"
     port="5555"
 else
     # Get IP address and port
