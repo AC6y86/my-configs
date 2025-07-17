@@ -30,6 +30,17 @@ ActivityTaskManager.*callingPackage.*is ambiguous
 # Core back preview spam
 CoreBackPreview.*Setting back callback null
 
+# AppsFilter interaction spam
+AppsFilter.*interaction.*BLOCKED
+
+# Display power controller spam
+DisplayPowerController.*Blocking screen off
+DisplayPowerController.*Unblocked screen off after
+DisplayBrightnessStrategySelector.*Changing the DisplayBrightnessStrategy
+
+# Settings to properties mapper spam
+SettingsToPropertiesMapper.*exceeds system property max length
+
 # Telemetry service spam
 TelemetryService.*Upload complete callback
 

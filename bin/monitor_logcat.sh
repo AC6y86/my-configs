@@ -91,6 +91,10 @@ if ! $ADB_CMD devices | grep -q "device[[:space:]]*$"; then
     exit 1
 fi
 
+# Clear existing logs
+echo "Clearing existing logcat buffer..."
+$ADB_CMD logcat -c
+
 # Create default filters file if it doesn't exist
 if [ ! -f "$FILTERS_FILE" ] && [ "$DISABLE_FILTERS" = false ]; then
     echo "Creating default filters file: $FILTERS_FILE"
