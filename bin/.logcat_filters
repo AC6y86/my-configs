@@ -1,0 +1,808 @@
+# Logcat spam filter patterns
+# Each line is a grep pattern that will be filtered OUT (using grep -v)
+# Lines starting with # are comments
+
+# Compatibility change reporter spam
+CompatibilityChangeReporter.*Compat change id reported
+
+# Buffer queue spam
+BufferQueueProducer.*dequeueBuffer.*BufferQueue has been abandoned
+Adreno.*DequeueBuffer.*dequeueBuffer failed
+
+# Bitrate calculator spam
+BitrateCalculator.*accumulate
+
+# VR API performance spam
+VrApi.*FPS=.*CPU.*GPU.*MHz
+
+# SLAM anchor spam
+Anchor:SlamAnchorMemoryOSSDKClient.*Trying to query head pose too far into the future
+
+# DNS resolver spam
+resolv.*res_nmkquery
+resolv.*resolv_cache_lookup
+resolv.*doQuery.*rcode=
+
+# Activity task manager verbose warnings
+ActivityTaskManager.*callingPackage.*has no WPC
+ActivityTaskManager.*callingPackage.*is ambiguous
+
+# Core back preview spam
+CoreBackPreview.*Setting back callback null
+
+# Telemetry service spam
+TelemetryService.*Upload complete callback
+
+# Volumetric window manager spam
+VolumetricWindowManagerServiceImpl.*Handling SWMS response
+
+# Activity launch interceptor warnings
+ActivityLaunchInterceptorBase.*No activity to handle
+
+# Display device repository spam  
+DisplayDeviceRepository.*Display device (added|removed)
+
+# Logical display mapper spam
+LogicalDisplayMapper.*(Adding new display|Removing display|Setting new display group)
+
+# Volumetric window spam
+VolumetricWindow.*Releasing volumetric window
+VolumetricContainerPlacement.*(acquired|released)
+VolumetricWindowManagerServiceImpl.*addTaskVolumetricWindowLocked
+VolumetricWindowManagerServiceBase.*Apply window change transaction
+
+# Window manager spam
+WindowManager.*Override config changes
+DisplayManagerService.*Ignore redundant display event
+
+# Brightness controller spam
+BrightnessThrottler.*DeviceConfig ThermalBrightnessThrottlingData
+DisplayPowerController.*Screen brightness nits configuration
+DisplayPowerController.*Brightness.*reason changing
+DisplayPowerController.*BrightnessEvent
+
+# Oculus/VR specific spam
+OculusWindowMgr.*OWMS::focusChanged
+InterstitialController.*onImmersiveActivityAppeared
+VolumetricContentMonitor.*(Switching to immersive app|Focused window changed)
+
+# Performance monitoring spam
+Looper.*Slow dispatch took.*ms
+
+# Media metrics spam
+MediaMetricsManagerService.*(failed to get.*from DeviceConfig|Logging level blocked)
+
+# Activity manager warnings
+ActivityManager.*setIsForegroundPanelService.*not found
+
+# Window state spam
+WindowManager.*Content Recording.*Display.*state is now
+WindowManager.*Queueing transition.*TransitionRecord
+
+# Task persister errors
+TaskPersister.*File error accessing recents directory
+
+# Codec spam
+CCodecConfig.*query failed after returning.*values
+Codec2Client.*query -- param skipped.*index
+CCodecBufferChannel.*Ignoring stale input buffer done callback
+
+# Analytics spam
+CoresdkAnalyticsEvent.*could not set key=
+ShellFrameAnalytics.*Shell Heartbeat
+
+# Flicker detection spam
+VD628x.*Flicker results.*freq.*max.*dcr
+
+# SLAM anchor throttled spam
+Anchor:SlamAnchorMemoryOSSDKClient.*Throttled count.*Skipping invalid anchorHandle
+
+# Tracking system spam
+Tracking.*NIMBLE:UnifiedHandBodyEngine.*Pipeline Latency
+Tracking.*NIMBLE:UnifiedHandBodyEngine.*Hand Tracking Processed FPS
+Tracking.*BOLT:HexagonTelemetry.*Global DSP utilization
+Tracking.*boltlib.*Logging Rpc stats
+
+# Horizon authentication spam
+HorizonDsatHelper.*fetchTokenValueAsync
+HorizonDsatHelper.*fetchTokenAsync
+HorizonDsatHelper.*Returning stored token
+
+# Art/Dalvik spam
+artd.*Failed to determine oat file name
+ziparchive.*Unable to open.*No such file or directory
+
+# Social platform spam
+SocialViewModel.*Failed to fetch current party data
+
+# Camera system spam
+XrCameraHal.*Camera.*configuring streams
+XrCameraHal.*Camera.*EnableCamera
+XrCameraHal.*Camera.*StartCamera
+XrCameraHal.*Camera.*UpdateFrameSettings
+XrCameraHal.*XrStreamManager.*setFrameBasedSettings
+XrCameraHal.*starting stream thread
+CameraClientManager.*stream start completed
+CameraStream.*Client.*start complete
+
+# Camera sensor spam
+CAM_INFO.*CAM-SENSOR.*CAM_ACQUIRE_DEV Success
+CAM_INFO.*CAM-SENSOR.*CAM_START_DEV.*Success
+CAM_INFO.*CAM-SMMU.*already in list.*give same addr back
+CAM_INFO.*CAM-CRM.*link reserved
+CAM_INFO.*CAM-ISP.*Acquired Single IFE
+
+# VR sensor spam
+VrSensors-HidlWrapper.*Create IMU Sensor using fmq
+
+# Camera/ISP spam
+IspController.*enabled corepi3a algorithms
+CorePi.*AWB.*create.*succeed
+CorePi.*AWB.*Initialize.*successfully
+CamX.*ERROR.*PPROC.*Invalid pointer
+
+# Resource/bandwidth spam
+SDM.*ResourceImpl.*SetMaxBandwidthMode
+SDM.*ResourceAlloc.*SetMaxBandwidthMode
+
+# Tracking service spam
+TrackingService.*Mux Mode Transition
+TrackingService.*Configuration update
+TrackingService.*handleMuxModeNotification
+SensorService.*Setting camera mux mode
+SensorDataTransforms.*Staging mux mode update
+FrameSetDispatcher.*Updated CameraMuxMode
+
+# Sync boss firmware spam
+SyncBossFW.*general_cam_mgr
+FrameSetCollator.*started at
+
+# QC2 component spam
+QC2Comp.*Stats.*Pending.*Works
+QC2Comp.*Mem-usage.*bufs.*MB
+
+# Telemetry spam
+telemetry.*PoseDataCollector.*Collecting pose data
+
+# DUMPSYS spam
+DUMPSYS_LOG.*camera_fps.*event.*CameraFPS
+
+# Health daemon spam
+healthd.*battery.*l=.*v=.*t=
+
+# Mixed reality spam
+MIXEDREALITY.*PassthroughApiManager.*GetUpdatedLayerState
+
+# Traffic stats spam
+TrafficStats.*tagSocket.*with statsTag
+
+# Tracking fidelity spam
+TrackingFidelityService.*Request.*Mux mode
+TrackingFidelityService.*beginTransition
+TrackingFidelityService.*applyMuxModeLockedInternal
+
+# Rate downsampler spam
+RateDownsampler.*First Active Window frameset
+RateDownsampler.*Stats.*Number of valid framesets
+
+# Additional camera ISP spam
+CAM_INFO.*CAM-ISP.*NO CRM session.*top state machine assigned
+CAM_INFO.*CAM-ISP.*Last request id to flush
+CAM_INFO.*CAM-ISP.*Stop HW complete.*Reset HW next
+CAM_WARN.*CAM-ISP.*Reg dump values might be from more than one request
+
+# Sensor telemetry spam
+libsensortelemetry.*Camera ID.*out of range for cameraInfo
+
+# Frame set dispatcher spam
+FrameSetDispatcher.*Latest MuxModeSettings
+FrameSetDispatcher.*purpose.*slots
+FrameSetDispatcher.*Client.*Client thread stopping
+
+# Camera client manager spam
+CameraClientManager.*client stopped.*estimated.*remaining
+CameraClientManager.*definitely stopping stream
+
+# Sensor service spam
+SensorService.*Skipped updateSyncbossFrameTag.*no updater or override
+
+# Camera stream spam
+CameraStream.*Client.*attempting stop
+
+# Frame set collator spam
+FrameSetCollator.*stopped.*Ran for.*s
+
+# Android panel app spam (from crap files)
+android_panel_app.AndroidPanelLayer.*uniqueId=
+com.oculus.android_panel_app.AndroidPanelLayer
+
+# VolumetricWindowPersister errors
+VolumetricWindowPersister.*deletePersistedVolumetricWindowInfo.*no file found
+
+# AppsFilter interaction blocking
+AppsFilter.*interaction.*BLOCKED
+
+# Additional LogicalDisplayMapper spam
+LogicalDisplayMapper.*Applying layout.*dispId.*displayGroupName
+
+# HorizonOsWindowManagerUtils warnings
+HorizonOsWindowManagerUtils.*Can.t set focus.*no visible window found
+
+# Camera sensor telemetry spam
+libsensortelemetry.*Camera sensor name does not exist.*Skipping publishing telemetry
+
+# Camera core warnings
+CAM_WARN.*CAM-CORE.*cam_context_handle_flush_dev.*No flush device
+
+# Camera sensor success messages
+CAM_INFO.*CAM-SENSOR.*CAM_STOP_DEV Success
+CAM_INFO.*CAM-SENSOR.*CAM_RELEASE_DEV Success
+CAM_INFO.*CAM-ISP.*Release HW success
+
+# SyncBoss firmware errors
+SyncBossFW.*Mag interrupt pin LOW in drdy handler
+
+# Binder allocation warnings
+binder_alloc.*spamming oneway.*buffers allocated
+binder.*transaction failed.*size.*line
+debug_low_async_space_locked.*callbacks suppressed
+
+# Log dropped messages
+logd_ext.*dropped.*logs
+
+# Additional tracking service spam
+TrackingFidelityService.*Fidelity data undefined in catalog
+TrackingFidelityService.*Mux mode transition successfully finished
+SensorDataTransforms.*Mux mode update succesfully staged
+SensorDataTransforms.*Erased.*stale entries from the staged mux states
+
+# Additional activity manager spam
+ActivityManager.*Unable to start service Intent.*not found
+ActivityManager.*Start proc.*for next-activity
+ActivityManager.*Process.*has died.*fg.*TOP
+ActivityManager.*sync unfroze.*for
+ActivityManager.*freezing.*com.oculus
+ActivityTaskManager.*START u0.*flg=.*cmp=.*with LAUNCH_SINGLE_TASK
+ActivityTaskManager.*START u0.*flg=.*cmp=.*with LAUNCH_MULTIPLE
+ActivityTaskManager.*getDisplaysWithTopActivities.*immersive ActivityRecord
+ActivityTaskManager.*Force finishing activity
+ActivityTaskManager.*No component for base intent of task.*Task
+
+# Additional window manager spam
+WindowManager.*Failed looking up window session
+WindowManager.*Queue is too deep.*Purged item with index
+WindowManager.*Sent Transition.*createdAt.*via request
+WindowManager.*startWCT=.*WindowContainerTransaction
+WindowManager.*startWCT=null
+WindowManager.*info=.*id=.*t=.*f=.*trk=.*r=.*c=
+WindowManager.*Finish Transition.*created at.*collect-started
+WindowManager.*WIN DEATH.*Window
+WindowManager.*removeAppToken.*Attempted to remove non-existing token
+WindowManager.*Exception thrown during dispatchAppVisibility.*EXITING
+WindowManager.*android.os.DeadObjectException
+WindowManager.*at android.os.BinderProxy.transact
+WindowManager.*at android.view.IWindow.*Proxy.dispatchAppVisibility
+WindowManager.*at com.android.server.wm.WindowState.sendAppVisibilityToClients
+WindowManager.*at com.android.server.wm.WindowContainer.sendAppVisibilityToClients
+WindowManager.*at com.android.server.wm.WindowToken.setClientVisible
+WindowManager.*at com.android.server.wm.ActivityRecord.setClientVisible
+WindowManager.*at com.android.server.wm.ActivityRecord.postApplyAnimation
+WindowManager.*at com.android.server.wm.ActivityRecord.commitVisibility
+WindowManager.*at com.android.server.wm.Transition.finishTransition
+WindowManager.*at com.android.server.wm.TransitionController.finishTransition
+WindowManager.*at com.android.server.wm.WindowOrganizerController.finishTransition
+WindowManager.*at android.window.WindowOrganizer.finishTransition
+WindowManager.*at oculus.internal.volumetricwindow.VolumetricTaskOrganizer
+WindowManager.*at com.android.internal.util.function.pooled
+WindowManager.*at android.os.Handler.handleCallback.*Handler.java
+WindowManager.*at android.os.Handler.dispatchMessage.*Handler.java
+WindowManager.*at android.os.Looper.loopOnce.*Looper.java
+WindowManager.*at android.os.Looper.loop.*Looper.java
+WindowManager.*at com.android.server.SystemServer.run.*SystemServer.java
+WindowManager.*at com.android.server.SystemServer.main.*SystemServer.java
+WindowManager.*Unknown focus tokens.*dropping reportFocusChanged
+
+# Additional volumetric window spam
+VolumetricWindowManagerService.*Skip associateSpatialAudio.*token appears to not be valid
+VolumetricContainerPlacement.*acquired ContainerPlacement.*mId=.*mBounds=
+VolumetricContainerPlacement.*released.*ContainerPlacement.*mId=.*mBounds=
+VolumetricContentMonitor.*Switching to immersive app.*taskId.*ActivityInfo
+VolumetricContentMonitor.*Focused window changed to RunningWindowInfo
+VolumetricContentMonitor.*Removed VW VolumetricWindowToken
+VolumetricContentMonitor.*Switching to home env.*taskId
+VolumetricTaskOrganizer.*onTaskActivitiesDisappeared.*taskId
+
+# Additional display device spam
+DisplayDeviceRepository.*Display device added.*DisplayDeviceInfo
+DisplayDeviceRepository.*Display device removed.*DisplayDeviceInfo
+DisplayDevice.*Layerstack set to.*for virtual
+DisplayManagerService.*Drop pending events for gone uid
+LogicalDisplayMapper.*Adding new display.*DisplayInfo
+LogicalDisplayMapper.*Setting new display group.*for display.*from previous group
+VirtualDisplayAdapter.*Ignoring VIRTUAL_DISPLAY_FLAG_OWN_FOCUS
+
+# Additional camera system spam
+FrameSetDispatcher.*Client pid=.*Client thread.*started
+CameraClientManager.*client started.*estimated.*started clients total
+CameraClientManager.*definitely starting stream
+CameraClientManager.*stream stop completed
+CameraStream.*Client.*attempting start
+CameraStream.*Client.*stop complete
+CAM_WARN.*CAM-ICP.*cam_icp_mgr_handle_frame_process.*has been aborted.*flushed
+
+# Additional tracking service spam
+TrackingService.*Queue mux mode update notification
+TrackingService.*start onMuxStateUpdate.*ModeId
+TrackingService.*end onMuxStateUpdate.*ModeId
+TrackingService.*Start configuration update.*starting
+TrackingService.*Start configuration update done
+TrackingService.*Finish configuration update.*starting
+TrackingService.*Finish configuration update done
+TrackingFidelityService.*endTransition.*seqId.*succeeded=
+SensorDataTransforms.*Signaling start of the mode transition
+SensorService.*(updating|ending update to) CameraStream mux states
+
+# Additional core back preview spam
+CoreBackPreview.*Window.*Setting back callback OnBackInvokedCallbackInfo
+
+# Additional media metrics spam
+MediaMetricsManagerService.*failed to get player_metrics_app_blocklist from DeviceConfig
+MediaMetricsManagerService.*Logging level blocked.*Failed to get PLAYER_METRICS_APP_BLOCKLIST
+
+# Additional companion device spam
+CDM_AssociationRequestsProcessor.*New CDM association created
+CDM_CompanionDeviceManagerService.*cannot apply policy to UID
+CompanionDevice_PersistentDataStore.*Writing associations for user.*to disk
+
+# Transition spam
+Transition.*Transition already started id=.*state=
+
+# Additional process/service spam
+ProcessStats.*Tracking association.*whose proc state.*is better than process
+servicemanager.*Unregistering artd
+servicemanager.*Since.*artd.*could not be found.*trying to start
+servicemanager.*Notifying artd they do.*have clients when service
+servicemanager.*Notifying.*they don.t.*have clients when we now have
+
+# Android runtime crash spam - DISABLED TO PRESERVE CRASHES
+# IMPORTANT: These filters are commented out to preserve crash information
+#AndroidRuntime.*FATAL EXCEPTION
+#AndroidRuntime.*Process.*PID
+#AndroidRuntime.*java.lang.*Exception
+#AndroidRuntime.*at com.meta.spatial.toolkit
+#AndroidRuntime.*at com.android.internal
+#AndroidRuntime.*at kotlinx.coroutines
+#AndroidRuntime.*at kotlin.coroutines
+#AndroidRuntime.*at java.lang.reflect.Method.invoke
+#AndroidRuntime.*Suppressed.*kotlinx.coroutines
+
+# System service spam
+BpBinder.*onLastStrongRef automatically unlinking death recipients
+DropBoxManagerService.*add tag=.*isTagEnabled
+VirtualDeviceManagerService.*notifyRunningAppsChanged called for unknown deviceId
+TaskContainerManagerServiceImpl.*Trying to release task container with an invalid host token
+UsageStatsService.*Unexpected activity event reported
+InterstitialController.*onImmersiveActivityGone.*immersive activity gone
+
+# Init service spam
+init.*Service.*artd.*exited with status
+init.*Sending signal.*to service.*artd
+init.*starting service.*artd
+init.*started service.*artd.*has pid
+init.*Control message.*Processed ctl.interface_start
+
+# Additional system process spam
+libprocessgroup.*Successfully killed process cgroup
+ZramWriteback.*Total pages written to disk
+JobScheduler.*Job didn.t exist in JobStore
+
+# Health check service spam
+ExplicitHealthCheckController.*health check.*packages
+ExplicitHealthCheckController.*Service.*ready.*Binding
+ExplicitHealthCheckController.*service.*connected.*ComponentInfo
+ExplicitHealthCheckController.*Service initialized.*syncing requests
+ExplicitHealthCheckController.*unbinding
+ExplicitHealthCheckController.*service is unbound
+
+# Package watchdog spam
+PackageWatchdog.*Syncing.*reason
+PackageWatchdog.*rescue-party-observer.*packages to monitor
+PackageWatchdog.*Not pruning observers.*elapsed time
+PackageWatchdog.*Saving observer state to file
+RescueParty.*Starting to observe.*updated namespace
+
+# Additional system configuration spam
+SettingsToPropertiesMapper.*key=persist.device_config.*value=
+PermissionManager.*Permission.*cannot be granted to privileged vendor apk.*because it isn.t a.*vendorPrivileged.*permission
+PermissionManager.*Package.*is an APK in APEX.*but has permission allowlist on the system image
+
+# Additional hardware/firmware spam
+syncboss_spi.*bad magic from MCU.*value.*data_ready_irq
+libcrcs.*signal://theater/.*is not present.*we will assume
+SyncBossFW.*cpu load cur=.*min=.*max=.*avg=
+
+# ====================================
+# AGGRESSIVE SPAM FILTERING PATTERNS
+# ====================================
+
+# System UI and Notification spam
+SystemUI.*
+NotificationManager.*
+StatusBarManager.*
+StatusBar.*
+NavigationBar.*
+QuickSettings.*
+NotificationService.*
+NotificationListenerService.*
+
+# Network and connectivity spam
+ConnectivityService.*
+NetworkAgent.*
+NetworkMonitor.*
+NetworkStatsService.*
+WiFiService.*
+WifiManager.*
+WifiStateMachine.*
+TelephonyManager.*
+DataConnection.*
+NetworkPolicy.*
+
+# Power management spam
+PowerManager.*
+BatteryService.*
+BatteryStats.*
+ThermalService.*
+PowerHAL.*
+CpuFreq.*
+GPU.*freq.*
+thermal.*
+
+# Graphics and rendering spam
+SurfaceFlinger.*
+OpenGL.*
+GPU.*
+Adreno.*
+Vulkan.*
+RenderThread.*
+HWComposer.*
+GraphicsEnvironment.*
+
+# Input system spam
+InputReader.*
+InputDispatcher.*
+TouchInputMapper.*
+KeyboardInputMapper.*
+PointerController.*
+InputMethod.*
+GestureDetector.*
+
+# Audio system spam
+AudioFlinger.*
+AudioManager.*
+AudioService.*
+AudioTrack.*
+AudioRecord.*
+VolumeProvider.*
+MediaPlayer.*
+
+# Package and app management spam
+PackageManager.*
+ActivityManager.*
+ApplicationsState.*
+AppOpsService.*
+UsageStats.*
+ProcessStats.*
+LauncherApps.*
+
+# Storage and file system spam
+StorageManager.*
+MountService.*
+VoldConnector.*
+MediaScanner.*
+DownloadManager.*
+
+# Location services spam
+LocationManager.*
+GpsLocationProvider.*
+FusedLocationProvider.*
+GeofenceManager.*
+
+# Performance monitoring and debugging spam
+Trace.*
+Debug.*
+StrictMode.*
+DropBox.*
+EventLog.*
+SystemServer.*wtf.*
+
+# Dalvik/ART runtime spam
+dalvikvm.*
+art.*
+dex2oat.*
+GC.*pause.*
+GC.*alloc.*
+
+# Joe's Enhanced Wildcards (more aggressive)
+SensorService.*
+BackupRestoreController.*
+VoiceInteractionManager.*
+KeyValueBackupTask.*
+BatteryExternalStatsWorker.*
+Dropping Event.*wtf.*
+MrTrackerMgr.*
+StateMachine.*
+BufferPoolAccessor.*
+DisplayDeviceRepository.*
+PermissionManager.*
+PackageWatchdog.*
+ExplicitHealthCheckController.*
+BackupManagerService.*
+Telecom.*
+PackageConfigPersister.*
+VolumetricContentMonitor.*
+DisplayModeDirector.*
+CorePi.*
+PersistableBundle.*
+Tracking.*
+ConnectivityService.*
+socialplatform.*
+BackgroundStartupDetector.*
+IPCThreadState.*
+XrStreamManager.*
+AnchorPersistenceRuntimeIpcServer.*
+DeviceConfigTelemetryLogger.*
+UnifiedTelemetryLogger.*
+CloudBackupManager.*
+EpsMixer.*
+AnchorPersistence.*
+FullRestoreCoordinator.*
+PayloadBuilder.*
+agm_server_wrapper.*
+EntropyMixer.*
+CamX.*
+SyncBoss.*
+libsensortelemetry.*
+LogicalDisplayMapper.*
+SoundSystem.*
+OpenGLRenderer.*
+IPCService.*
+MIXEDREALITY.*
+ReactNativeJS.*
+audioserver.*
+Vsync.*
+AudioTapperService.*
+GraphQLExecutor.*
+MemoryBroker.*
+binder.*
+libaudiotapper.*
+audiomonitorbugnub.*
+AdrenoVK.*
+FrameSetDispatcher.*
+JobServiceContext.*
+AlarmManager.*
+DGW.*
+StreamGroup.*
+DisplayManagerService.*
+CaptureSurfaceManager.*
+QueryMgr.*
+TREX.*
+
+# Additional aggressive patterns for common Android spam
+.*TAG.*fps.*
+.*TAG.*latency.*
+.*TAG.*performance.*
+.*TAG.*Stats.*
+.*TAG.*Duration.*
+.*TAG.*Time.*
+.*I/.*DEBUG.*
+.*V/.*
+.*D/ActivityManager.*
+.*D/WindowManager.*
+.*D/PackageManager.*
+.*I/chatty.*uid.*expire.*
+.*AudioFlinger.*mixer.*
+.*gralloc.*
+.*libEGL.*
+.*perfetto.*
+.*traced.*
+
+# IMPORTANT: Whitelist critical error patterns (negative filters to preserve)
+# These patterns should NOT be filtered out - keep crashes and important errors
+# (Commented out filters that would normally catch these)
+# .*FATAL.*
+# .*crash.*
+# .*exception.*
+# .*error.*
+# .*E/.*
+# .*segfault.*
+# .*abort.*
+# .*AndroidRuntime.*FATAL.*
+# .*java.lang.*Exception.*
+# .*Native crash.*
+# .*tombstone.*
+
+# WHITELIST: Keep all logs from spatialvideopoker
+# Override any filters that might block spatialvideopoker logs
+# Note: This is handled by modifying the filter logic to skip filtering for spatialvideopoker
+
+# Kernel and low-level system spam
+kernel.*
+msm.*
+qcom.*
+thermal_core.*
+cpu.*governor.*
+cpuidle.*
+kgsl.*
+ion.*
+
+# Memory management spam
+lowmemorykiller.*
+oom.*
+kswapd.*
+vmpressure.*
+zram.*
+meminfo.*
+
+# Process lifecycle spam
+.*Process.*started.*
+.*Process.*died.*
+.*Process.*killing.*
+.*START u0.*pid.*
+.*KILL.*
+.*proc start timeout.*
+
+# Service binding spam
+.*bindService.*
+.*unbindService.*
+.*service connected.*
+.*service disconnected.*
+.*ServiceRecord.*
+
+# Intent and broadcast spam
+.*broadcast.*timeout.*
+.*Broadcast.*u0.*act.*
+.*Intent.*extras.*
+.*PendingIntent.*
+
+# Hardware abstraction layer spam
+.*HAL.*
+.*vendor.*
+.*hardware.*
+.*android.hardware.*
+
+# Composition and display spam
+.*composition.*
+.*display.*state.*
+.*brightness.*
+.*backlight.*
+
+# Miscellaneous high-frequency spam
+.*Scheduling.*
+.*Looper.*
+.*Handler.*
+.*Message.*
+.*Runnable.*
+.*AsyncTask.*
+.*Thread.*started.*
+.*waiting.*
+.*timeout.*
+
+# Aggressive subsystem wildcards - entire namespaces
+com.android.systemui.*
+com.android.server.*
+com.google.android.*
+com.qualcomm.*
+com.qti.*
+android.app.*
+android.content.*
+android.view.*
+android.widget.*
+android.graphics.*
+android.media.*
+android.net.*
+android.bluetooth.*
+android.telephony.*
+android.location.*
+android.hardware.*
+
+# Aggressive log level filtering (but preserve errors)
+.*D/Zygote.*
+.*I/Zygote.*
+.*V/Zygote.*
+.*D/dalvikvm.*
+.*I/dalvikvm.*
+.*V/dalvikvm.*
+.*D/art.*
+.*I/art.*
+.*V/art.*
+
+# Meta/Oculus specific aggressive filtering
+com.oculus.*
+com.meta.*
+oculus.*
+meta.*
+horizon.*
+spatial.*
+volumetric.*
+
+# Very aggressive catch-all patterns for common spam terms
+.*performance.*
+.*latency.*
+.*bandwidth.*
+.*throughput.*
+.*statistics.*
+.*metrics.*
+.*telemetry.*
+.*heartbeat.*
+.*keepalive.*
+.*ping.*
+.*polling.*
+.*sync.*
+.*flush.*
+.*cache.*
+.*buffer.*
+
+# PhaseSync spam
+.*PhaseSync.*DiscardFrame.*
+.*PhaseSync.*PS_Ver.*
+.*PhaseSync.*triggered.*
+.*PhaseSync.*Stage.*
+.*PhaseSync.*FrameBeginIndex.*
+
+# PT API clients spam
+.*PTApiClients.*
+.*\[CT\].*PTApiClients.*
+.*PT=.*EnvDepth=.*VrMode=.*
+.*LCnt=.*rec=.*proj=.*bg=.*
+.*NS=.*Sty=.*
+
+# FrameTracker jank spam
+.*FrameTracker.*Missing HWUI jank callback.*
+.*FrameTracker.*vsyncId.*
+.*FrameTracker.*CUJ=.*
+.*FrameTracker.*SPLASHSCREEN_EXIT_ANIM.*
+
+# Shell SEO spam
+.*\[SEO\].*ShellSpatialWindowManagerService.*
+.*\[SEO\].*IntentParser.*
+.*\[SEO\].*PanelAppLaunchInfo.*
+.*\[SEO\].*HostPlatform.*
+.*\[SEO\].*HostPlatformPackages.*
+.*\[SEO\].*LaunchCheckController.*
+.*\[SEO\].*GuardianController.*
+
+# VR Guardian spam
+.*VrGuardianService.*GuardianSDKServer.*
+.*GuardianLaunchCheckMgr.*
+.*SafetyIntentMgr.*
+.*AppLaunchId.*Type.*
+.*RequestLaunchCheck.*
+.*handling launch check.*same request id.*
+.*Ignore.*retry request.*
+
+# VR Runtime spam
+.*VrRuntimeService.*
+.*VrRuntimeClient.*
+.*BoundaryVisibilityChangeEvent.*
+.*RuntimeIPC.*SendGuardianBoundaryVisibilityChangeEventToAllClients.*
+.*PostClientEvent SUCCESS.*
+.*UpdateGuardianBoundaryVisibility.*
+
+# App Manager spam
+.*AppManagerClient.*Process already bound.*
+.*AppManagerInternal.*Entitlement.*not found.*
+.*LibraryProvider.*queryApp.*could not find entitlement.*
+
+# Analytics spam
+.*AnalyticsEvent.*could not set key.*
+
+# OVR Library spam
+.*OVRLibrary.*null cursor received.*
+.*content://com.oculus.ocms.library.*
+
+# Avatar system spam
+.*Avatar2ResourceSystem.*
+.*Avatar2RenderSystem.*
+.*LoadMorphTargets.*Failed to get.*
+.*initAvatarPrimitives.*Detected primitive change.*
+.*Shell.*LocalAvatar.*

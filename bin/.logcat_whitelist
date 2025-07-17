@@ -1,0 +1,33 @@
+# Logcat whitelist patterns
+# Each line is a grep pattern that will ALWAYS pass through (ignoring all filters)
+# Lines starting with # are comments
+
+# Always keep spatialvideopoker logs
+spatialvideopoker
+
+# Always keep critical error patterns
+FATAL
+crash
+exception
+segfault
+abort
+tombstone
+
+# Always keep error log levels
+\sE\s
+
+# Always keep AndroidRuntime crashes
+AndroidRuntime.*FATAL
+
+# Always keep native crashes
+Native crash
+
+# Always keep ANR (Application Not Responding) logs
+ANR in
+
+# Always keep system_server crashes
+system_server.*died
+system_server.*crash
+
+# Always keep watchdog timeouts
+Watchdog.*timeout
