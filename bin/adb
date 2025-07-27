@@ -3,7 +3,7 @@
 # ADB wrapper script that detects the correct ADB executable path
 
 if [ -x /mnt/c/tools/maui/bin/platform-tools/adb.exe ]; then
-    exec cmd.exe /c C:\\tools\\maui\\bin\\platform-tools\\adb.exe "$@"
+    exec /mnt/c/tools/maui/bin/platform-tools/adb.exe "$@"
 elif [ -x /home/joepaley/joepaley/AppData/Local/Android/sdk/platform-tools/adb.exe ]; then
     exec /home/joepaley/joepaley/AppData/Local/Android/sdk/platform-tools/adb.exe "$@"
 else
