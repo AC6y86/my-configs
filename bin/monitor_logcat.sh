@@ -91,10 +91,6 @@ if ! $ADB_CMD devices | grep -q "device[[:space:]]*$"; then
     exit 1
 fi
 
-# Clear existing logs
-echo "Clearing existing logcat buffer..."
-$ADB_CMD logcat -c
-
 # Create default filters file if it doesn't exist
 if [ ! -f "$FILTERS_FILE" ] && [ "$DISABLE_FILTERS" = false ]; then
     echo "Creating default filters file: $FILTERS_FILE"
@@ -248,11 +244,40 @@ colorize_output() {
         -e "s/.*\sV\s.*/$(echo -e "${BLUE}")&$(echo -e "${NC}")/"
 }
 
-# Main execution
+# Check if device is still connected
+check_device_connection() {
+    if ! $ADB_CMD devices | grep -q "device[[:space:]]*$"; then
+        return 1
+    fi
+    return 0
+}
+
+# Wait for device to reconnect
+wait_for_device() {
+    echo "Device disconnected. Waiting for reconnection..."
+    local retry_count=0
+    local max_retries=60  # Wait up to 5 minutes (60 * 5 seconds)
+    
+    while [ $retry_count -lt $max_retries ]; do
+        if check_device_connection; then
+            echo "Device reconnected!"
+            return 0
+        fi
+        
+        retry_count=$((retry_count + 1))
+        echo "Waiting for device... (attempt $retry_count/$max_retries)"
+        sleep 5
+    done
+    
+    echo "Device did not reconnect within timeout period."
+    return 1
+}
+
+# Main execution with auto-restart
 main() {
     setup_colors
     
-    echo "Starting filtered logcat monitoring..."
+    echo "Starting filtered logcat monitoring with auto-restart..."
     if [ "$DISABLE_FILTERS" = true ]; then
         echo "Filters: DISABLED"
     else
@@ -273,32 +298,60 @@ main() {
         echo "Output file: $SAVE_TO_FILE"
     fi
     
+    echo "Auto-restart enabled - script will reconnect if ADB drops"
     echo "Press Ctrl+C to stop..."
     echo "----------------------------------------"
     
-    # Build and execute the command pipeline
-    if [ "$DISABLE_FILTERS" = true ]; then
-        if [ -n "$SAVE_TO_FILE" ]; then
-            $ADB_CMD logcat | colorize_output | tee "$SAVE_TO_FILE"
+    # Main monitoring loop with auto-restart
+    while true; do
+        # Clear existing logs
+        echo "Clearing existing logcat buffer..."
+        $ADB_CMD logcat -c
+        
+        # Start monitoring
+        if [ "$DISABLE_FILTERS" = true ]; then
+            if [ -n "$SAVE_TO_FILE" ]; then
+                $ADB_CMD logcat | colorize_output | tee "$SAVE_TO_FILE"
+            else
+                $ADB_CMD logcat | colorize_output
+            fi
         else
-            $ADB_CMD logcat | colorize_output
+            # Build filter chain
+            local cmd="$ADB_CMD logcat"
+            
+            # Apply filters with whitelist protection for spatialvideopoker
+            cmd="$cmd | apply_filters_with_whitelist"
+            
+            # Add colorization and optional file output
+            cmd="$cmd | colorize_output"
+            if [ -n "$SAVE_TO_FILE" ]; then
+                cmd="$cmd | tee '$SAVE_TO_FILE'"
+            fi
+            
+            # Execute the command
+            eval "$cmd"
         fi
-    else
-        # Build filter chain
-        local cmd="$ADB_CMD logcat"
         
-        # Apply filters with whitelist protection for spatialvideopoker
-        cmd="$cmd | apply_filters_with_whitelist"
+        # If we get here, logcat exited (likely due to connection drop)
+        local exit_code=$?
         
-        # Add colorization and optional file output
-        cmd="$cmd | colorize_output"
-        if [ -n "$SAVE_TO_FILE" ]; then
-            cmd="$cmd | tee '$SAVE_TO_FILE'"
+        # If exit was due to Ctrl+C, break the loop
+        if [ $exit_code -eq 130 ]; then
+            break
         fi
         
-        # Execute the command
-        eval "$cmd"
-    fi
+        echo ""
+        echo "Logcat stopped (exit code: $exit_code). Checking device connection..."
+        
+        # Wait for device to reconnect
+        if wait_for_device; then
+            echo "Restarting logcat monitoring..."
+            echo "----------------------------------------"
+        else
+            echo "Failed to reconnect to device. Exiting."
+            exit 1
+        fi
+    done
 }
 
 # Handle Ctrl+C gracefully

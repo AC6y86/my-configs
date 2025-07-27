@@ -13,8 +13,8 @@ segfault
 abort
 tombstone
 
-# Always keep error log levels
-\sE\s
+# Always keep error log levels (commented out to allow BufferQueue filtering)
+#\sE\s
 
 # Always keep AndroidRuntime crashes
 AndroidRuntime.*FATAL

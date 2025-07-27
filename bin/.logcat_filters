@@ -7,6 +7,10 @@ CompatibilityChangeReporter.*Compat change id reported
 
 # Buffer queue spam
 BufferQueueProducer.*dequeueBuffer.*BufferQueue has been abandoned
+BufferQueueProducer.*ImageReader-.*dequeueBuffer.*BufferQueue has been abandoned
+BufferQueueProducer.*\[ImageReader-.*\].*dequeueBuffer.*BufferQueue has been abandoned
+E BufferQueueProducer.*ImageReader.*dequeueBuffer.*BufferQueue has been abandoned
+BufferQueueProducer.*ImageReader-2064x2208f1m1.*dequeueBuffer.*BufferQueue has been abandoned
 Adreno.*DequeueBuffer.*dequeueBuffer failed
 
 # Bitrate calculator spam
@@ -446,6 +450,76 @@ QuickSettings.*
 NotificationService.*
 NotificationListenerService.*
 
+# SoLoader spam
+SoLoader.*Initializing SoLoader
+SoLoader.*Previously recorded.*base apk paths
+SoLoader.*SoLoader initialized
+SoLoader.*Loading.*on the main thread
+
+# System resource spam
+System.*A resource failed to call end
+System.*A resource failed to call release
+System.*A resource failed to call HardwareBuffer.close
+
+# Performance monitoring spam
+PerfStream.*SystemStateStats
+PerfStream.*getDonStates
+
+# DNS resolver spam
+resolv.*res_nsend.*used send_dg.*terrno
+
+# Libc spam
+libc.*SetHeapTaggingLevel.*tag level set to
+
+# Binder client spam
+BinderClient.*Connected to.*Service
+
+# Additional spam patterns
+CHIUSECASE.*ERROR.*chxperf.cpp.*Initialize.*Unable to find perfd library
+JavaBinder.*FAILED BINDER TRANSACTION.*parcel size
+OnDemandManager.*Fetching on demand atoms for config id
+OnDemandManager.*Filtered atoms size
+CastingController.*Sending an intent to turn off Prox Sensor
+libosutils.*Failed to get real path of file.*No such file or directory
+SimpleQueueMediaUploadsWorker.*Finish queueing media for upload
+netd.*tetherGetStats.*->
+ThermalReactivePolicy.*EVENT.*perfmgr.*Thermal governor would upgrade feature
+OpenXR_Anchor.*xrQuerySpacesFB.*split anchor query enabled
+Telemetry.*OpenXR_Anchor.*component enabled cannot be changed
+ziparchive.*Unable to open.*No such file or directory
+
+# Additional boltlib spam
+boltlib.*Logging Rpc stats.*detailed=false.*onAbort=false
+boltlib.*DSP Rpc stats over.*ms.*null
+boltlib.*DSP Rpc stats over.*ms.*HexagonCvpPreprocessorCompute
+I MRSS.*boltlib.*Logging Rpc stats
+I MRSS.*boltlib.*DSP Rpc stats over.*ms.*null
+I MRSS.*boltlib.*DSP Rpc stats over.*ms.*HexagonCvpPreprocessorCompute
+I Tracking.*boltlib.*Logging Rpc stats
+
+# AIDL service spam
+AidlLazyServiceRegistrar.*Trying to shut down the service.*No clients in use
+AidlLazyServiceRegistrar.*Unregistered all clients and exiting
+
+# Anchor storage spam
+\[CT\].*SP:AP:AnchorLocalStorage.*loadAvailableAnchors loaded.*anchors
+
+# Display and graphics spam
+DisplayModeControl.*Requesting mode.*for display
+RefreshRateSelector.*Display.*policy changed
+RefreshRateSelector.*Previous.*defaultModeId.*allowGroupSwitching
+RefreshRateSelector.*Current.*DisplayManagerPolicy.*defaultModeId
+RefreshRateSelector.*mode changes were performed under the previous policy
+SDM.*HWDeviceDRM.*GetSupportedBitClkRate.*Requested rate not supported
+SDM.*HWDeviceDRM.*UpdateMixerAttributes.*Mixer WxH.*for Peripheral
+SDM.*HWDeviceDRM.*SetDisplaySwitchMode.*Mode.*already set
+HorizonStandalone.*Instance.*Unknown event type.*XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB
+
+# Frame processing spam
+FrameSetCollator.*rejecting frame.*frame with mux mode.*received during FrameSet
+FrameSetCollator.*releasing incomplete frame set.*deadlineMissed.*muxModeMisMatch
+MrSystemService.*onFrameSetAvailable.*Number of available images.*does not match required.*in frameset
+
 # Network and connectivity spam
 ConnectivityService.*
 NetworkAgent.*
@@ -720,6 +794,8 @@ android.hardware.*
 .*D/Zygote.*
 .*I/Zygote.*
 .*V/Zygote.*
+Zygote.*Process.*exited due to signal.*Killed
+Zygote.*Forked child process
 .*D/dalvikvm.*
 .*I/dalvikvm.*
 .*V/dalvikvm.*
