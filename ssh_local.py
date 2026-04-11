@@ -1,10 +1,11 @@
 import subprocess
 import sys
 import os
+import json
 
-# Store the previous username and hostname in /tmp
-USERNAME_FILE = "/tmp/local_servers_username"
+# Store the previous hostname in /tmp, but usernames persistently in home dir
 HOSTNAME_FILE = "/tmp/local_servers_hostname"
+USERNAME_CACHE_FILE = os.path.expanduser("~/.ssh_local_usernames.json")
 
 def get_hostname():
     """Get the hostname from the command line or the previous hostname"""
@@ -27,17 +28,29 @@ def resolve_hostname(hostname):
             pass
     raise ValueError(f"Unable to resolve hostname {hostname}")
 
-def get_username():
-    """Get the username from the previous run or prompt the user"""
+def load_username_cache():
+    """Load the username cache from disk"""
     try:
-        with open(USERNAME_FILE, "r") as f:
-            previous_username = f.read().strip()
-    except FileNotFoundError:
-        previous_username = None
+        with open(USERNAME_CACHE_FILE, "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
 
-    if previous_username:
-        print(f"Using cached username: {previous_username}")
-        return previous_username
+def save_username_cache(cache):
+    """Save the username cache to disk"""
+    try:
+        with open(USERNAME_CACHE_FILE, "w") as f:
+            json.dump(cache, f)
+    except Exception as e:
+        print(f"Warning: Failed to save username cache: {e}")
+
+def get_username(hostname):
+    """Get the username from cache for this hostname or prompt the user"""
+    cache = load_username_cache()
+
+    if hostname in cache:
+        print(f"Using cached username for {hostname}: {cache[hostname]}")
+        return cache[hostname]
 
     print("Select a username:")
     print("1. root")
@@ -73,18 +86,16 @@ def connect_to_server(username, hostname):
         except Exception as e:
             print(f"Error updating SSH config: {e}")
     
-    def cache_username(username):
-        """Cache the username after successful connection"""
-        try:
-            with open(USERNAME_FILE, "w") as f:
-                f.write(username)
-        except Exception as e:
-            print(f"Warning: Failed to cache username: {e}")
+    def cache_username(username, hostname):
+        """Cache the username after successful connection for this hostname"""
+        cache = load_username_cache()
+        cache[hostname] = username
+        save_username_cache(cache)
 
     try:
         # Attempt to SSH into the server
         subprocess.run(["ssh", "-o", "BatchMode=yes", f"{username}@{resolved_hostname}"], check=True)
-        cache_username(username)  # Cache username after successful connection
+        cache_username(username, hostname)  # Cache username after successful connection
         add_ssh_config_entry(hostname, resolved_hostname, username)
         try:
             subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
@@ -98,7 +109,7 @@ def connect_to_server(username, hostname):
             subprocess.run(["ssh-copy-id", f"{username}@{resolved_hostname}"], check=True)
             print("Trying SSH again...")
             subprocess.run(["ssh", "-o", "BatchMode=yes", f"{username}@{resolved_hostname}"], check=True)
-            cache_username(username)  # Cache username after successful connection
+            cache_username(username, hostname)  # Cache username after successful connection
             add_ssh_config_entry(hostname, resolved_hostname, username)
             try:
                 subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
@@ -106,20 +117,21 @@ def connect_to_server(username, hostname):
             except Exception as e:
                 print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
         else:
+            cache_username(username, hostname)  # Connection was successful, cache it
             add_ssh_config_entry(hostname, resolved_hostname, username)
             try:
                 subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
                 print("Called sync_ssh_to_windows_symlink.sh after successful SSH and config update.")
             except Exception as e:
                 print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
-            print(f"Failed to connect to {username}@{resolved_hostname}")
+            print(f"SSH session exited with code {e.returncode}")
 
 def main():
     try:
         hostname = get_hostname()
         with open(HOSTNAME_FILE, "w") as f:
             f.write(hostname)
-        username = get_username()
+        username = get_username(hostname)
         connect_to_server(username, hostname)
     except ValueError as e:
         print(f"Error: {e}")

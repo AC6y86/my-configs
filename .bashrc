@@ -106,7 +106,12 @@ alias cd_user='cd /mnt/c/Users/joepaley'
 alias open='xdg-open'
 alias ssh_local='python3 ~/my-configs/ssh_local.py'
 
-alias wf="~/my-configs/windsurf-launcher.sh ."
+# spawning terminals 
+alias termv='wt.exe -w 0 split-pane -V -p Ubuntu -d "$(wslpath -w .)"'
+alias termh='wt.exe -w 0 split-pane -H -p Ubuntu -d "$(wslpath -w .)"'
+alias term='wt.exe -w 0 new-tab -p Ubuntu -d "$(wslpath -w .)"'
+
+
 
 
 # scaling for wsl gui apps
@@ -120,3 +125,8 @@ export ANDROID_HOME=/mnt/c/Users/joepaley/AppData/Local/Android/Sdk
 # keep this last
 source ~/.bashrc_local
 export PATH=~/.npm-global/bin:~/my-configs/bin:$PATH
+alias claude-fast="claude --dangerously-skip-permissions"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
