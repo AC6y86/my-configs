@@ -7,6 +7,16 @@ import json
 HOSTNAME_FILE = "/tmp/local_servers_hostname"
 USERNAME_CACHE_FILE = os.path.expanduser("~/.ssh_local_usernames.json")
 
+# Hostname to IP mappings for direct connections
+HOSTNAME_MAP = {
+    "devserver": "164.92.107.136",
+}
+
+# Default usernames for specific hostnames
+DEFAULT_USERNAMES = {
+    "devserver": "joepaley",
+}
+
 def get_hostname():
     """Get the hostname from the command line or the previous hostname"""
     if len(sys.argv) > 1:
@@ -18,7 +28,11 @@ def get_hostname():
         raise ValueError("No hostname provided and no previous hostname found")
 
 def resolve_hostname(hostname):
-    """Try to resolve the hostname by appending .joepaley and .joepaley.com"""
+    """Try to resolve the hostname by checking direct mappings or appending .joepaley and .joepaley.com"""
+    # Check if hostname has a direct IP mapping
+    if hostname in HOSTNAME_MAP:
+        return HOSTNAME_MAP[hostname]
+
     hostnames_to_try = [f"{hostname}.joepaley", f"{hostname}.joepaley.com"]
     for h in hostnames_to_try:
         try:
@@ -51,6 +65,12 @@ def get_username(hostname):
     if hostname in cache:
         print(f"Using cached username for {hostname}: {cache[hostname]}")
         return cache[hostname]
+
+    # Check if there's a default username for this hostname
+    if hostname in DEFAULT_USERNAMES:
+        username = DEFAULT_USERNAMES[hostname]
+        print(f"Using default username for {hostname}: {username}")
+        return username
 
     print("Select a username:")
     print("1. root")
