@@ -2,6 +2,13 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 
+# Bridge Windows fb-sks-agent to WSL for native ssh
+export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
+if ! ss -a 2>/dev/null | grep -q "$SSH_AUTH_SOCK"; then
+    rm -f "$SSH_AUTH_SOCK"
+    (setsid socat UNIX-LISTEN:"$SSH_AUTH_SOCK",fork EXEC:"$HOME/my-configs/bin/npiperelay.exe -ei -s //./pipe/fb-sks-agent",nofork &>/dev/null &)
+fi
+
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 

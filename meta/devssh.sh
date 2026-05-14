@@ -1,7 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
-SSH_EXE="/mnt/c/Windows/System32/OpenSSH/ssh.exe"
+if [[ -z "${SSH_AUTH_SOCK:-}" ]]; then
+    echo "ERROR: SSH_AUTH_SOCK not set. Run 'source ~/.bashrc' or open a new terminal." >&2
+    echo "If this is a new machine, see ~/my-configs/meta/CreateDevTerm.md for setup." >&2
+    exit 1
+fi
+SSH_EXE="ssh"
+SSH_OPTS=(-o "IdentityAgent=$SSH_AUTH_SOCK")
 USER="joepaley"
 HOST="devvm7002.scu0.facebook.com"
 TMUX_SESSION=""
@@ -16,7 +22,7 @@ done
 
 echo "Connecting to ${HOST} ..."
 if [[ -n "$TMUX_SESSION" ]]; then
-    exec "$SSH_EXE" "${USER}@${HOST}" -t "tmux new-session -A -s ${TMUX_SESSION}"
+    exec "$SSH_EXE" "${SSH_OPTS[@]}" "${USER}@${HOST}" -t "tmux new-session -A -s ${TMUX_SESSION}"
 else
-    exec "$SSH_EXE" "${USER}@${HOST}"
+    exec "$SSH_EXE" "${SSH_OPTS[@]}" "${USER}@${HOST}"
 fi
