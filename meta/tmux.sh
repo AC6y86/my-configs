@@ -199,6 +199,7 @@ attach_session() {
     trap - EXIT
     [[ -n "$SAVED_TTY" ]] && [[ -t 3 ]] && stty "$SAVED_TTY" <&3 2>/dev/null || true
     tput cnorm 2>/dev/null || true
+    printf '\033]0;devterm: %s\007' "$name"
     exec tmux new-session -A -s "$name"
 }
 
