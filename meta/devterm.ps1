@@ -17,5 +17,5 @@ if ($found -and $found.MainWindowHandle -ne [IntPtr]::Zero) {
     if ([Win32]::IsIconic($h)) { [Win32]::ShowWindow($h, 9) }
     [Win32]::SetForegroundWindow($h)
 } else {
-    & wt.exe --title devterm -p Ubuntu -d "\\wsl$\Ubuntu\home\joepaley" -- bash -l -c "~/my-configs/meta/devssh.sh -t"
+    & wt.exe --title devterm -p Ubuntu -d "\\wsl$\Ubuntu\home\joepaley" -- bash -l -c "~/my-configs/meta/tmux.sh"
 }
