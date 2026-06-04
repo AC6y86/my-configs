@@ -23,13 +23,19 @@ SSH is using a plain key instead of the Meta certificate. Check:
    - `socat` is installed (`sudo apt install socat`)
    - Restart the bridge: `source ~/.bashrc` or open a new terminal
 
-3. **`npiperelay.exe` missing** — Download from https://github.com/jstarks/npiperelay/releases and place in `~/my-configs/bin/`:
+3. **`npiperelay.exe` missing or in wrong filesystem** — The binary must exist at `~/my-configs/bin/npiperelay.exe` on the WSL filesystem (`/home/joepaley/...`), not just the Windows filesystem (`C:\Users\joepaley\...`). These are separate copies. If you download from Windows, you must copy it into WSL:
    ```powershell
-   # From PowerShell
+   # From PowerShell — download
    Invoke-WebRequest -Uri "https://github.com/jstarks/npiperelay/releases/download/v0.1.0/npiperelay_windows_amd64.zip" -OutFile "$env:TEMP\npiperelay.zip"
    Expand-Archive "$env:TEMP\npiperelay.zip" "$env:TEMP\npiperelay" -Force
    Copy-Item "$env:TEMP\npiperelay\npiperelay.exe" "$env:USERPROFILE\my-configs\bin\"
    ```
+   ```bash
+   # From WSL — copy into the WSL filesystem
+   cp /mnt/c/Users/joepaley/my-configs/bin/npiperelay.exe ~/my-configs/bin/npiperelay.exe
+   chmod +x ~/my-configs/bin/npiperelay.exe
+   ```
+   After copying, restart WSL (`wsl --shutdown` from PowerShell) so `.bashrc` restarts the bridge.
 
 ### `cannot execute binary file: Exec format error`
 

@@ -25,7 +25,7 @@ $shortcut.Save()
 
 ## How it works
 
-- The shortcut runs `meta/devterm.ps1` which checks for an existing Terminal window with "ssh" in the title
+- The shortcut runs `meta/devterm.ps1` which checks for an existing Terminal window with "devterm" in the title
 - If found, it brings that window to the foreground (restoring it if minimized)
-- If not found, it launches a new Windows Terminal with the Ubuntu WSL profile and runs `devssh.sh -t`
+- If not found, it launches a new Windows Terminal with the Ubuntu WSL profile and runs `tmux.sh` (the interactive tmux session manager)
 - Searchable via Win key by typing "devterm"
