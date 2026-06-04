@@ -1,6 +1,6 @@
 # CreateDevTerm
 
-Create a Windows Start Menu shortcut called "devterm" that opens a new Windows Terminal with Ubuntu and SSHes into the Meta devserver with tmux. If a devterm window is already open, it brings it to the foreground instead.
+Create a Windows Start Menu shortcut called "devterm" that opens a new Windows Terminal with Ubuntu and SSHes into the Meta devserver with tmux.
 
 ## Prerequisites
 
@@ -25,7 +25,5 @@ $shortcut.Save()
 
 ## How it works
 
-- The shortcut runs `meta/devterm.ps1` which checks for an existing Terminal window with "devterm" in the title
-- If found, it brings that window to the foreground (restoring it if minimized)
-- If not found, it launches a new Windows Terminal with the Ubuntu WSL profile and runs `tmux.sh` (the interactive tmux session manager)
+- The shortcut runs `meta/devterm.ps1` which launches a new Windows Terminal with the Ubuntu WSL profile and runs `tmux.sh` (the interactive tmux session manager)
 - Searchable via Win key by typing "devterm"
