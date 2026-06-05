@@ -112,7 +112,9 @@ read_key() {
     if [[ "$key" == $'\x1b' ]]; then
         local seq
         IFS= read -rsN1 -t 0.1 seq <&3 || true
-        if [[ "$seq" == "[" ]]; then
+        # Arrow keys arrive as ESC [ X (normal) or ESC O X (application cursor
+        # key mode / DECCKM, which tmux leaves set on exit). Handle both.
+        if [[ "$seq" == "[" || "$seq" == "O" ]]; then
             IFS= read -rsN1 -t 0.1 seq <&3 || true
             case "$seq" in
                 A) KEY_RESULT="UP"; return ;;
@@ -211,6 +213,10 @@ main() {
         SAVED_TTY=$(stty -g <&3 2>/dev/null || true)
         stty raw -echo <&3 2>/dev/null || true
     fi
+
+    # Force normal cursor-key mode (DECCKM reset) so arrows send ESC [ X, not
+    # ESC O X. A prior tmux attach can leave the terminal in application mode.
+    printf '\e[?1l'
 
     local selected=0
     local total=${#MENU_ITEMS[@]}
