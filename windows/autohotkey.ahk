@@ -226,18 +226,46 @@ scroll_down()
   Return
 }
 
-; Emacs-style bindings, active only outside target windows (terminals, VNC,
-; Vim, etc.). Using #If means AHK leaves these keys completely untouched in
-; target windows — no re-send — so they don't collide with the Ctrl/Alt swap
-; defined for the terminal below.
-#If !is_target()
-!a::move_beginning_of_line()
-!e::move_end_of_line()
-^f::isearch_forward()
-^g::Send {F3}
-!y::yank()
-!k::kill_line()
-#If
+!a::
+  If is_target()
+    Send %A_ThisHotkey%
+  Else
+    move_beginning_of_line()
+  Return
+!e::
+  If is_target()
+    Send %A_ThisHotkey%
+  Else
+    move_end_of_line()
+  Return
+^f::
+  If is_target()
+    Send %A_ThisHotkey%
+  Else
+  {
+    isearch_forward()
+  }
+  Return
+^g::
+  If is_target()
+    Send %A_ThisHotkey%
+  Else
+  {
+    Send {F3}
+  }
+  Return
+!y::
+  If is_target()
+    Send %A_ThisHotkey%
+  Else
+    yank()
+  Return
+!k::
+  If is_target()
+    Send %A_ThisHotkey%
+  Else
+    kill_line()
+  Return
   
   
 LCtrl & Tab::AltTab
@@ -263,12 +291,8 @@ LCtrl::LAlt
 LAlt::LCtrl
 #IfWinActive
 
-; Windows Terminal (WSL/Ubuntu): swap Ctrl<->Alt so the easy-to-reach physical
-; Alt key sends Ctrl (e.g. Ctrl-C to quit apps) and physical Ctrl sends Alt
-; (Meta). The Emacs bindings above are disabled here via #If !is_target() so
-; they don't intercept the swapped keys -- otherwise Ctrl-A and Alt-A both
-; collapsed into beginning-of-line. Keep that #If guard if you touch this.
 #IfWinActive, ahk_exe WindowsTerminal.exe
+; Windows Terminal (WSL/Ubuntu)
 LCtrl::LAlt
 LAlt::LCtrl
 #IfWinActive
