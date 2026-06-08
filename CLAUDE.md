@@ -11,9 +11,11 @@ The git root is `my-configs/`; the `windows/` subdirectory holds Windows-side co
 ## Install / activate changes
 
 - **`.bashrc`**: symlinked into `~` (`ln -s my-configs/.bashrc ~/.bashrc`). After editing, `source ~/.bashrc`. It sources `~/.bashrc_local` (machine-specific, untracked) near the end, then prepends `~/my-configs/bin` to `PATH` — so anything in `bin/` is runnable by name.
-- **`windows/autohotkey.ahk`**: to autostart on login, copy it to
+- **`windows/autohotkey.ahk`**: to autostart on login it must live in
   `C:\Users\joepaley\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`.
-  (It is not symlinked; re-copy after editing to update the running version, or restart the script.)
+  It is not symlinked. After editing, run `windows/install-autohotkey.ps1`
+  (PowerShell) to copy it over the old version and restart the running
+  AutoHotkey instance so changes take effect immediately.
 - **`bin/` scripts**: already on `PATH` via `.bashrc`. `ssh_local` is aliased to `python3 ~/my-configs/ssh_local.py`.
 
 ## The WSL → Windows boundary (the main architectural theme)
