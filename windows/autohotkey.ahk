@@ -226,49 +226,26 @@ scroll_down()
   Return
 }
 
-!a::
-  If is_target()
-    Send %A_ThisHotkey%
-  Else
-    move_beginning_of_line()
-  Return
-!e::
-  If is_target()
-    Send %A_ThisHotkey%
-  Else
-    move_end_of_line()
-  Return
-^f::
-  If is_target()
-    Send %A_ThisHotkey%
-  Else
-  {
-    isearch_forward()
-  }
-  Return
-^g::
-  If is_target()
-    Send %A_ThisHotkey%
-  Else
-  {
-    Send {F3}
-  }
-  Return
-!y::
-  If is_target()
-    Send %A_ThisHotkey%
-  Else
-    yank()
-  Return
-!k::
-  If is_target()
-    Send %A_ThisHotkey%
-  Else
-    kill_line()
-  Return
+; Emacs-style bindings for NON-terminal Windows apps. Guarded with
+; #If !is_target() so they are completely inert in terminals/VNC/Vim. This is
+; required because Ctrl/Alt are swapped at the registry level (Scancode Map) and
+; un-swapped per-terminal below: if these hotkeys fired/re-sent in a terminal
+; they intercepted the swapped Alt and made Ctrl-A and Alt-A collapse together.
+#If !is_target()
+!a::move_beginning_of_line()
+!e::move_end_of_line()
+^f::isearch_forward()
+^g::Send {F3}
+!y::yank()
+!k::kill_line()
+#If
   
   
-LCtrl & Tab::AltTab
+; Disabled: this makes LCtrl a custom prefix key, which breaks the LCtrl::LAlt
+; half of the per-terminal un-swap blocks below (only one direction of the
+; Ctrl<->Alt un-swap fires, so physical Alt stays Ctrl). Re-add with a non-Ctrl
+; trigger if AltTab is wanted.
+; LCtrl & Tab::AltTab
 
 ; don't switch cntrl and alt
 #IfWinActive, ahk_class mintty
@@ -291,8 +268,12 @@ LCtrl::LAlt
 LAlt::LCtrl
 #IfWinActive
 
+; Windows Terminal (WSL/Ubuntu): un-swap the registry-level Ctrl<->Alt swap so
+; the terminal sees normal modifiers (Ctrl-C interrupts, Ctrl-A = start of line).
+; REQUIRED because Ctrl/Alt are swapped globally via the Scancode Map; without
+; this, physical Ctrl reaches the shell as Alt (e.g. Ctrl-C -> Alt-C ->
+; capitalize-word). Mirrors the mintty/ConsoleWindowClass blocks above.
 #IfWinActive, ahk_exe WindowsTerminal.exe
-; Windows Terminal (WSL/Ubuntu)
 LCtrl::LAlt
 LAlt::LCtrl
 #IfWinActive

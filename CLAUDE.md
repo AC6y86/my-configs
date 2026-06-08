@@ -17,6 +17,18 @@ The git root is `my-configs/`; the `windows/` subdirectory holds Windows-side co
   (PowerShell) to copy it over the old version and restart the running
   AutoHotkey instance so changes take effect immediately.
 - **`bin/` scripts**: already on `PATH` via `.bashrc`. `ssh_local` is aliased to `python3 ~/my-configs/ssh_local.py`.
+- **Windows terminal/PowerShell configs**: tracked copies live in
+  `windows/powershell/Microsoft.PowerShell_profile.ps1` (live: `$PROFILE`, i.e.
+  `C:\Users\joepaley\Documents\PowerShell\...`) and
+  `windows/windows-terminal/settings.json` (live:
+  `%LOCALAPPDATA%\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json`).
+  Deploy with `windows/install-windows-configs.ps1` (backs up each live file to a
+  `.bak-<timestamp>` first). These make WSL/bash and PowerShell behave the same:
+  the profile sets PSReadLine to emacs edit mode (matching bash readline), and
+  Windows Terminal frees `ctrl+c` for SIGINT with copy/paste on
+  `ctrl+shift+c`/`ctrl+shift+v`. Windows Terminal rewrites its `settings.json`
+  via the UI, so re-copy the live file back into the repo after intentional UI
+  changes. See `windows/WINDOWS_TERMINAL_KEYS.md` for the key-handling rationale.
 
 ## The WSL → Windows boundary (the main architectural theme)
 
