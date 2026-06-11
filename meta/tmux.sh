@@ -4,16 +4,30 @@ set -euo pipefail
 TEST_MODE=false
 [[ "${1:-}" == "--test" ]] && TEST_MODE=true
 
-if ! $TEST_MODE && [[ -z "${SSH_AUTH_SOCK:-}" ]]; then
-    echo "ERROR: SSH_AUTH_SOCK not set. Run 'source ~/.bashrc' or open a new terminal." >&2
-    exit 1
+# SSH cert agent differs by platform: WSL bridges Windows fb-sks-agent into
+# SSH_AUTH_SOCK via .bashrc; macOS runs fb-sks-agent natively at a known path.
+# Prefer the native socket when present (so this works on macOS without .bashrc),
+# else fall back to whatever SSH_AUTH_SOCK the environment already set (WSL).
+if ! $TEST_MODE; then
+    FB_SKS_SOCK="$HOME/.fb-sks-agent/agent.sock"
+    if [[ -S "$FB_SKS_SOCK" ]]; then
+        export SSH_AUTH_SOCK="$FB_SKS_SOCK"
+    elif [[ -z "${SSH_AUTH_SOCK:-}" ]]; then
+        echo "ERROR: SSH_AUTH_SOCK not set." >&2
+        echo "  WSL:   run 'source ~/.bashrc' or open a new terminal." >&2
+        echo "  macOS: try '/opt/facebook/bin/fb-sks-agent restart'." >&2
+        exit 1
+    fi
 fi
 
 SSH_USER="joepaley"
 HOST="devvm7002.scu0.facebook.com"
 
 # ---- Menu script: runs on the devvm (or locally in test mode) ----
-REMOTE_SCRIPT=$(cat <<'ENDSCRIPT'
+# Assign via `read -r -d ''` rather than $(cat <<'EOF') because macOS's system
+# bash 3.2 cannot parse a heredoc nested inside command substitution. `read`
+# returns non-zero at EOF with -d '', hence the `|| true`.
+IFS='' read -r -d '' REMOTE_SCRIPT <<'ENDSCRIPT' || true
 set -euo pipefail
 
 REMOTE_MODE=false
@@ -277,13 +291,14 @@ main() {
 
 main "$@"
 ENDSCRIPT
-)
 
 # ---- Launch ----
 if $TEST_MODE; then
     bash -c "$REMOTE_SCRIPT" -- --test
 else
-    ENCODED=$(printf '%s' "$REMOTE_SCRIPT" | base64 -w0)
+    # `base64 -w0` is GNU-only; BSD/macOS base64 rejects -w. Strip newlines
+    # with tr instead so the encode is identical on both platforms.
+    ENCODED=$(printf '%s' "$REMOTE_SCRIPT" | base64 | tr -d '\n')
     printf "Connecting to %s ...\n" "$HOST"
     exec ssh -t -o "IdentityAgent=$SSH_AUTH_SOCK" "${SSH_USER}@${HOST}" \
         "echo $ENCODED | base64 -d > /tmp/.tmux_menu_\$\$ && bash /tmp/.tmux_menu_\$\$ --remote ; rm -f /tmp/.tmux_menu_\$\$"
