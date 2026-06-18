@@ -47,6 +47,10 @@
             "keys": "ctrl+shift+v"
         },
         {
+            "id": "User.paste",
+            "keys": "alt+v"
+        },
+        {
             "id": "User.splitPane.A6751878",
             "keys": "alt+shift+d"
         }

@@ -37,6 +37,9 @@ exists to cope with it.
    - `copy` is on **ctrl+shift+c**, `paste` on **ctrl+shift+v**, so `ctrl+c`
      passes through to the shell (interrupt/SIGINT) instead of being captured by
      copy. `copyOnSelect: true` keeps select=auto-copy.
+   - `paste` is also bound to **alt+v** (Mac-like Cmd-V — the thumb/Cmd-position
+     key is physical Alt). Captured here at the WT layer so it does not fall
+     through to the shell as readline `Meta-v`.
 4. **The shell**:
    - **WSL/bash** uses readline in emacs mode by default — the reference.
    - **PowerShell 7** profile (`windows/powershell/Microsoft.PowerShell_profile.ps1`,
