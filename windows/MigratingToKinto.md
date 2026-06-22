@@ -11,8 +11,10 @@ Mac muscle memory (Cmd on the Alt key, terminal copy/paste vs SIGINT, word/line
 nav) out of the box.
 
 > **Using Wispr Flow (dictation)?** Its hardcoded `Ctrl+V` auto-paste conflicts
-> with stock Kinto (lands a stray `v`), but a small, proven patch makes it
-> reliable again — see the **Wispr Flow** section (Step 5).
+> with Kinto. A patch *can* make it 100% reliable, but it has a real cost —
+> **terminal `Ctrl+C` stops interrupting** (SIGINT moves to `Cmd+.`). We judged
+> that too invasive and stayed on **stock Kinto + manual paste** (see the Wispr
+> Flow section).
 
 **Resulting key layout (Windows keymap):**
 - **Cmd = physical Alt** (key left of space) → Cmd+C/V/X/A/Z/S/F/T/W, Cmd+Tab
@@ -112,47 +114,34 @@ it's elevated — expected). `LastTaskResult 267009` = "currently running" (not 
 *Simpler alternative:* keep Kinto's `.vbs` in Startup and just accept the UAC
 prompt at each login.
 
-## Step 5 — Wispr Flow fix (optional, only if you use Wispr)
+## Wispr Flow — known limitation (an invasive patch exists; we did NOT keep it)
 
 Wispr auto-pastes by injecting a **hardcoded `Ctrl+V`** (not configurable). Stock
-Kinto intercepts/remaps `Ctrl+V`, and its AHK handler can't keep up with Wispr's
-fast injected batch → the paste lands a stray `v` (~1/10 success). The fix is to
-make `Ctrl+V` hit **no** AHK hotkey so it passes through natively (proven: with no
-`Ctrl+V` hotkey, Wispr pastes 100%). Disable the **three** Ctrl-path handlers in
-`%USERPROFILE%\.kinto\kinto.ahk` (back it up first):
+Kinto intercepts/remaps `Ctrl+V` and its AHK handler races Wispr's fast injected
+batch → the paste lands a stray `v` (~1/10).
 
-```powershell
-Copy-Item "$env:USERPROFILE\.kinto\kinto.ahk" "$env:USERPROFILE\.kinto\kinto.ahk.stock-bak"
-```
-1. Comment out the WinModifiers `$LCtrl::LWin` line (keeps physical Ctrl native):
-   `;     $LCtrl::LWin   ; WinModifiers`
-2. Comment out the Start-menu hack tied to it:
-   `;     $LCtrl up::Send {Ctrl down}{LWin up}{Ctrl up}            ; Default`
-3. Delete/comment the entire `$^v::` paste-handler block (the `If mintty … else
-   Send {Blind}v … return`).
+A patch makes Wispr **100% reliable** (verified): make `Ctrl+V` hit **no** AHK
+hotkey so it passes natively — in `~/.kinto/kinto.ahk` comment `$LCtrl::LWin` and
+the `$LCtrl up::` Start-menu hack, remove the `$^v::` handler, and add
+`ctrl+v`→paste to Windows Terminal. **But it's too invasive:** making physical
+Ctrl native makes it indistinguishable from Cmd, so **terminal `Ctrl+C` no longer
+interrupts** (SIGINT moves to `Cmd+.`) and physical Ctrl stops opening Start. We
+tried it, confirmed Wispr worked, then **reverted to stock** because losing
+terminal `Ctrl+C` isn't worth it.
 
-Then add a `ctrl+v`→paste binding to Windows Terminal `settings.json` (so terminal
-paste lands), and reload Kinto via the task:
-```powershell
-Stop-ScheduledTask -TaskName Kinto; Get-Process AutoHotkey* | Stop-Process -Force; Start-ScheduledTask -TaskName Kinto
-```
-
-**Trade-offs:** physical Ctrl no longer opens Start (use the Start button);
-terminal SIGINT stays on **Cmd+`.`** (already true under Kinto); Cmd+V in the
-terminal now comes from the WT `ctrl+v` binding. **Re-apply after any Kinto
-reinstall or keymap-toggle** — those regenerate `kinto.ahk` and revert these edits
-(keep the `.stock-bak`, and ideally a patched copy, for quick re-apply).
-
-If you'd rather not patch Kinto: **manual Cmd+V** after dictating (Wispr leaves the
-text on the clipboard), or a dictation tool that *types* (e.g. Windows Voice Typing).
+Recommended instead (no Kinto edits):
+- **Manual Cmd+V** after dictating — Wispr leaves the text on the clipboard; paste
+  with Cmd+V (physical Alt+V), which Kinto handles correctly.
+- Or a dictation tool that *types* instead of pasting (e.g. **Windows Voice
+  Typing**) — no `Ctrl+V`, no conflict.
 
 ## Verification
 
 - **Browser/editor:** physical **Alt+C/V/X/A/Z/S/F/T/W** = copy/paste/cut/select-all/
   undo/save/find/new-tab/close; **Alt+Tab** switches apps; **physical Ctrl** opens Start.
 - **Terminal (WSL/PowerShell):** Ctrl+C interrupts; copy/paste work; readline intact.
-- **Wispr (after the Step 5 patch):** dictate ~10× in an app and the terminal —
-  text pastes cleanly every time. (Without the patch, expect a stray `v`.)
+- **Wispr:** dictation triggers, but auto-paste is unreliable under stock Kinto —
+  use manual Cmd+V (see the Wispr Flow section).
 - Confirm Kinto is running: `Get-CimInstance Win32_Process -Filter "Name LIKE 'AutoHotkey%'" | ? CommandLine -match kinto`.
 
 ## Gotchas (all hit during the first migration)
