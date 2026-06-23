@@ -114,26 +114,53 @@ it's elevated — expected). `LastTaskResult 267009` = "currently running" (not 
 *Simpler alternative:* keep Kinto's `.vbs` in Startup and just accept the UAC
 prompt at each login.
 
-## Wispr Flow — known limitation (an invasive patch exists; we did NOT keep it)
+## Wispr Flow — the fix (suspend Kinto around the paste)
 
-Wispr auto-pastes by injecting a **hardcoded `Ctrl+V`** (not configurable). Stock
-Kinto intercepts/remaps `Ctrl+V` and its AHK handler races Wispr's fast injected
-batch → the paste lands a stray `v` (~1/10).
+**Problem:** Wispr auto-pastes by injecting a **hardcoded `Ctrl+V`** (not
+configurable; no "type" mode). Stock Kinto's `$LCtrl::LWin` remaps that injected
+Ctrl to **Win**, so the app gets **Win+V** -> the Windows clipboard-history panel
+pops on every dictation (and a race sometimes drops a stray `v`). Editing Kinto so
+Ctrl+V passes natively *does* fix Wispr but makes physical Ctrl indistinguishable
+from Cmd -> **breaks terminal `Ctrl+C`** -- rejected. (Full investigation, including
+why a companion *hook* and the various Wispr settings/flags don't work, is in
+`windows/WISPR_KINTO_INVESTIGATION.md`.)
 
-A patch makes Wispr **100% reliable** (verified): make `Ctrl+V` hit **no** AHK
-hotkey so it passes natively — in `~/.kinto/kinto.ahk` comment `$LCtrl::LWin` and
-the `$LCtrl up::` Start-menu hack, remove the `$^v::` handler, and add
-`ctrl+v`→paste to Windows Terminal. **But it's too invasive:** making physical
-Ctrl native makes it indistinguishable from Cmd, so **terminal `Ctrl+C` no longer
-interrupts** (SIGINT moves to `Cmd+.`) and physical Ctrl stops opening Start. We
-tried it, confirmed Wispr worked, then **reverted to stock** because losing
-terminal `Ctrl+C` isn't worth it.
+**The fix (Kinto stays 100% stock):** a tiny **elevated** AHK companion that briefly
+**suspends Kinto** only around Wispr's paste. On Wispr's push-to-talk key release it
+suspends Kinto (so the injected Ctrl+V passes natively -> clean paste, no Win+V),
+then resumes ~700 ms after the next clipboard change, with a safety timeout. The
+remap is off for only ~1 s per dictation; terminal Ctrl+C, Cmd shortcuts, and
+Start-via-Ctrl are untouched.
 
-Recommended instead (no Kinto edits):
-- **Manual Cmd+V** after dictating — Wispr leaves the text on the clipboard; paste
-  with Cmd+V (physical Alt+V), which Kinto handles correctly.
-- Or a dictation tool that *types* instead of pasting (e.g. **Windows Voice
-  Typing**) — no `Ctrl+V`, no conflict.
+Deploy (adjust the push-to-talk key in the script if yours isn't Shift+F1, and
+`$user`/paths for the machine):
+```powershell
+# 1) copy the companion + installer into ~/.kinto
+Copy-Item "$HOME\my-configs\windows\kinto\wispr-suspend.ahk"             "$env:USERPROFILE\.kinto\" -Force
+Copy-Item "$HOME\my-configs\windows\kinto\install-wispr-suspend-task.ps1" "$env:USERPROFILE\.kinto\" -Force
+# 2) register + start the elevated logon task (self-elevates; accept UAC)
+Start-Process powershell -Verb RunAs -ArgumentList '-NoProfile','-ExecutionPolicy','Bypass','-File',"$env:USERPROFILE\.kinto\install-wispr-suspend-task.ps1"
+```
+Then **add a `ctrl+v`->paste keybinding to Windows Terminal**
+(`windows/windows-terminal/settings.json`): during the suspend window Wispr fires
+native Ctrl+V, but WT's paste is Ctrl+Shift+V. Safe -- normal physical Ctrl+V under
+Kinto is Win+V (never `ctrl+v`), and Ctrl+C is untouched. (GUI apps already paste on
+native Ctrl+V; no change needed.)
+
+Verify: `Get-ScheduledTask WisprKintoSuspend` = Running; dictate into Notepad and a
+Windows Terminal tab -- text pastes, **no clipboard panel**, Ctrl+C still interrupts.
+Log: `~/.kinto/wispr-suspend.log` (SUSPEND...RESUME pairs per dictation).
+
+Gotchas:
+- Companion **must be elevated** (to message elevated Kinto -- UIPI). The logon task
+  handles that.
+- **No manual suspend toggle** -- AHK suspend is a blind toggle; a stray toggle
+  desyncs belief vs. reality and leaves Kinto stuck suspended (then physical keys go
+  native). The script only does the strictly-paired auto cycle + resets on Kinto
+  restart.
+- **Zoom Clips** (if installed) registers a global **Ctrl+Shift+C** that collides
+  with terminal copy (Kinto sends Ctrl+Shift+C for Cmd+C in terminals) -- disable
+  that global shortcut in Zoom -> Settings -> Keyboard Shortcuts. Unrelated to Wispr.
 
 ## Verification
 
