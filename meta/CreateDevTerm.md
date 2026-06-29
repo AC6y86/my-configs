@@ -25,5 +25,24 @@ $shortcut.Save()
 
 ## How it works
 
-- The shortcut runs `meta/devterm.ps1` which launches a new Windows Terminal with the Ubuntu WSL profile and runs `tmux.sh` (the interactive tmux session manager)
+- The shortcut runs `meta/devterm.ps1` which launches a new Windows Terminal (`wt -w new`, its own window) with the Ubuntu WSL profile and runs `tmux.sh` (the interactive tmux session manager)
 - Searchable via Win key by typing "devterm"
+
+## Per-session taskbar icons
+
+Each devterm gets its own taskbar button + icon, keyed on the tmux session you
+attach to. This is needed because all `wt.exe` windows are hosted by one
+`WindowsTerminal.exe` process and otherwise share a single taskbar button.
+
+- `devterm.ps1` starts `meta/devterm-tag-watcher.ps1` (hidden) before launching
+  the window. `tmux.sh` sets the window title to `devterm: <session>` on attach;
+  the watcher spots that window and overrides its property store with a
+  per-session `System.AppUserModel.ID` + `RelaunchIconResource`, then briefly
+  hides/re-shows it to force the shell to recreate the taskbar button (the shell
+  only reads a window's AUMID at button-creation time).
+- Icons are generated per session (colored initials, color hashed from the name)
+  and cached in `%LOCALAPPDATA%\devterm\icons\`. Override a session by dropping
+  `<session>.ico` in `windows/devterm-icons/` — see the README there.
+- `meta/set-window-appid.ps1` is a standalone diagnostic for the same mechanism
+  (`-List` dumps window titles; pass `-TitleMatch/-AppId/-IconPath -ForceRegroup`
+  to tag a window by hand).
