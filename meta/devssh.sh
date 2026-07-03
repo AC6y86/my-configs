@@ -6,7 +6,6 @@ if [[ -z "${SSH_AUTH_SOCK:-}" ]]; then
     echo "If this is a new machine, see ~/my-configs/meta/CreateDevTerm.md for setup." >&2
     exit 1
 fi
-SSH_EXE="ssh"
 SSH_OPTS=(-o "IdentityAgent=$SSH_AUTH_SOCK")
 USER="joepaley"
 HOST="devvm7002.scu0.facebook.com"
@@ -20,9 +19,14 @@ for arg in "$@"; do
     esac
 done
 
+# Route through the YubiKey type-ahead wrapper (falls back to plain ssh when
+# disabled via DEVSSH_NO_OTP=1 or when there's no tty). See ssh-otp-connect.sh.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONNECT="$SCRIPT_DIR/ssh-otp-connect.sh"
+
 echo "Connecting to ${HOST} ..."
 if [[ -n "$TMUX_SESSION" ]]; then
-    exec "$SSH_EXE" "${SSH_OPTS[@]}" "${USER}@${HOST}" -t "tmux new-session -A -s ${TMUX_SESSION}"
+    exec "$CONNECT" "${SSH_OPTS[@]}" "${USER}@${HOST}" -t "tmux new-session -A -s ${TMUX_SESSION}"
 else
-    exec "$SSH_EXE" "${SSH_OPTS[@]}" "${USER}@${HOST}"
+    exec "$CONNECT" "${SSH_OPTS[@]}" "${USER}@${HOST}"
 fi

@@ -300,6 +300,10 @@ else
     # with tr instead so the encode is identical on both platforms.
     ENCODED=$(printf '%s' "$REMOTE_SCRIPT" | base64 | tr -d '\n')
     printf "Connecting to %s ...\n" "$HOST"
-    exec ssh -t -o "IdentityAgent=$SSH_AUTH_SOCK" "${SSH_USER}@${HOST}" \
+    # Route through the YubiKey type-ahead wrapper (see ssh-otp-connect.sh); it
+    # forwards args verbatim via "$@", so the remote command below stays a single
+    # untouched argument. Falls back to plain ssh when DEVSSH_NO_OTP=1 / no tty.
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    exec "$SCRIPT_DIR/ssh-otp-connect.sh" -t -o "IdentityAgent=$SSH_AUTH_SOCK" "${SSH_USER}@${HOST}" \
         "echo $ENCODED | base64 -d > /tmp/.tmux_menu_\$\$ && bash /tmp/.tmux_menu_\$\$ --remote ; rm -f /tmp/.tmux_menu_\$\$"
 fi

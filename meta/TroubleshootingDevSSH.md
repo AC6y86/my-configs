@@ -2,13 +2,22 @@
 
 ## How it works
 
-`devssh.sh` uses WSL's native `ssh` with Meta's certificate-based auth. The chain is:
+`devssh.sh`/`tmux.sh` use native `ssh` with Meta's certificate-based auth. How the
+`fb-sks-agent` cert agent is reached depends on the platform:
 
 ```
-WSL ssh -> SSH_AUTH_SOCK (Unix socket) -> socat -> npiperelay.exe -> Windows fb-sks-agent named pipe -> Meta cert
+WSL:           ssh -> SSH_AUTH_SOCK (Unix socket) -> socat -> npiperelay.exe -> Windows fb-sks-agent named pipe -> Meta cert
+macOS / Linux: ssh -> SSH_AUTH_SOCK = ~/.fb-sks-agent/agent.sock -> native fb-sks-agent -> Meta cert
 ```
 
-The `.bashrc` snippet starts the socat/npiperelay bridge on shell init. The `~/.ssh/config` must include `config-certs` to use the certificate and agent.
+On **WSL**, the `.bashrc` snippet starts the socat/npiperelay bridge on shell init.
+On **macOS / native Linux**, `fb-sks-agent` runs natively and the scripts point
+`SSH_AUTH_SOCK` at `~/.fb-sks-agent/agent.sock` themselves (if auth fails, run
+`/opt/facebook/bin/fb-sks-agent restart`). In all cases `~/.ssh/config` must
+include `config-certs` to use the certificate and agent.
+
+The errors below are mostly WSL-specific (the bridge); on macOS/Linux skip
+straight to the `SSH_AUTH_SOCK not set` and 2FA sections.
 
 ## Common errors
 
@@ -56,10 +65,14 @@ Check `/etc/wsl.conf` does not contain `interop=false`.
 
 ### `SSH_AUTH_SOCK not set`
 
-The `.bashrc` bridge snippet didn't run. Either:
+**WSL** — the `.bashrc` bridge snippet didn't run. Either:
 - Run `source ~/.bashrc`
 - Open a new terminal
 - Check that `~/.bashrc` contains the socat/npiperelay block (see `CreateDevTerm.md`)
+
+**macOS / native Linux** — `fb-sks-agent` isn't running or its socket is missing.
+- Check `~/.fb-sks-agent/agent.sock` exists
+- Restart the agent: `/opt/facebook/bin/fb-sks-agent restart`
 
 ### `Authenticated with partial success` then `Permission denied (keyboard-interactive)`
 
