@@ -289,6 +289,11 @@ main() {
     # ESC O X. A prior tmux attach can leave the terminal in application mode.
     printf '\e[?1l'
 
+    # Title the window while on the selector; attach_session upgrades this to
+    # "devterm: <session>" on attach. Lets you tell same-icon devterm windows
+    # apart in the dock fan-out / overview (see CreateDevTerm-linux.md).
+    printf '\033]0;devterm\007'
+
     local selected=0
     local total=${#MENU_ITEMS[@]}
 
