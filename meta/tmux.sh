@@ -101,7 +101,7 @@ render_menu() {
     printf "\r\n"
     tput el 2>/dev/null || true
     if [[ $selected -lt ${#SESSIONS[@]} ]]; then
-        printf "\e[2mEnter attach  d delete  n new  q quit\e[0m"
+        printf "\e[2mEnter attach  d delete  r rename  n new  q quit\e[0m"
     else
         printf "\e[2mEnter new session  q quit\e[0m"
     fi
@@ -147,6 +147,7 @@ read_key() {
     case $ord in
         10|13) KEY_RESULT="ENTER" ;;
         100|68) KEY_RESULT="DELETE" ;;
+        114|82) KEY_RESULT="RENAME" ;;
         110|78) KEY_RESULT="NEW" ;;
         113|81) KEY_RESULT="QUIT" ;;
         *) KEY_RESULT="OTHER" ;;
@@ -181,28 +182,84 @@ confirm_delete() {
     return 1
 }
 
-NEW_SESSION_NAME=""
-prompt_new_session() {
+# Prompt for a line of text below the menu, returning it in LINE_RESULT.
+# $1 = prompt string, $2 = optional pre-filled/editable initial value.
+# Returns 1 (and empty LINE_RESULT) on Esc or an empty submission.
+#
+# Reads char-by-char in raw mode (we stay in the menu's raw -echo mode rather
+# than restoring cooked mode) so Esc is detectable — a cooked `read` can't see
+# Esc, it's just a byte in the line. Handle Enter, Backspace, and Esc; echo
+# printable chars ourselves since -echo is on.
+LINE_RESULT=""
+read_line_tty() {
+    local prompt="$1" name="${2:-}" ch ord cancelled=false
     local total=${#MENU_ITEMS[@]}
 
     printf "\e[%dB" $((total + 1))
     tput el 2>/dev/null || true
-    [[ -t 3 ]] && stty "$SAVED_TTY" <&3 2>/dev/null || true
     tput cnorm 2>/dev/null || true
-    printf "Session name: "
-    local name
-    read -r name <&3
+    printf "%s%s" "$prompt" "$name"
 
-    if [[ -z "$name" ]]; then
-        printf "\e[1A"
-        tput el 2>/dev/null || true
-        printf "\e[%dA" $((total + 1))
-        tput civis 2>/dev/null || true
-        [[ -t 3 ]] && stty raw -echo <&3 2>/dev/null || true
+    while true; do
+        IFS= read -rsN1 ch <&3 || true
+        if [[ -z "$ch" ]]; then
+            break   # NUL / EOF -> treat as Enter
+        fi
+        ord=$(printf '%d' "'$ch" 2>/dev/null) || ord=0
+        case $ord in
+            10|13) break ;;                          # Enter
+            27)                                       # Esc -> cancel to menu
+                # Drain any trailing bytes (e.g. an arrow key's ESC [ X).
+                while IFS= read -rsN1 -t 0.05 _ <&3; do :; done
+                cancelled=true
+                break
+                ;;
+            127|8)                                    # Backspace / DEL
+                if [[ -n "$name" ]]; then
+                    name="${name%?}"
+                    printf '\b \b'
+                fi
+                ;;
+            *)
+                name+="$ch"
+                printf '%s' "$ch"
+                ;;
+        esac
+    done
+
+    tput civis 2>/dev/null || true
+
+    # Erase the prompt line and return the cursor to the menu top so the
+    # caller's render/clear lines up.
+    printf "\r"
+    tput el 2>/dev/null || true
+    printf "\e[%dA" $((total + 1))
+
+    if $cancelled || [[ -z "$name" ]]; then
+        LINE_RESULT=""
         return 1
     fi
+    LINE_RESULT="$name"
+}
 
-    NEW_SESSION_NAME="$name"
+NEW_SESSION_NAME=""
+prompt_new_session() {
+    read_line_tty "Session name (Esc to cancel): " || return 1
+    NEW_SESSION_NAME="$LINE_RESULT"
+}
+
+rename_session() {
+    local idx=$1
+    local old="${SESSIONS[$idx]}"
+    read_line_tty "Rename \"$old\" to (Esc to cancel): " "$old" || return 1
+    local new="$LINE_RESULT"
+    [[ "$new" == "$old" ]] && return 1
+    if ! $TEST_MODE; then
+        tmux rename-session -t "$old" "$new" 2>/dev/null || true
+    fi
+    fetch_sessions
+    build_menu
+    return 0
 }
 
 attach_session() {
@@ -267,6 +324,12 @@ main() {
                 prompt_new_session || { render_menu $selected; continue; }
                 clear_menu
                 attach_session "$NEW_SESSION_NAME"
+                ;;
+            RENAME)
+                if [[ $selected -lt ${#SESSIONS[@]} ]]; then
+                    rename_session $selected || true
+                    render_menu $selected
+                fi
                 ;;
             DELETE)
                 if [[ $selected -lt ${#SESSIONS[@]} ]]; then
