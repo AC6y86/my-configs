@@ -75,7 +75,7 @@ These live in `meta/` and work on WSL, macOS, and Linux — the SSH cert agent i
 
 ## Fedora / GNOME desktop tweaks (`fedora/`)
 
-Native-Linux desktop UX customizations, applied via `gsettings` (stored in dconf, so they persist across reboots — nothing here is symlinked or sourced). **`fedora/gnome-tweaks.md`** is the running record of each tweak with the exact apply/verify/rollback commands. Current environment: Fedora, GNOME Shell 50.2, Wayland; the dock is the **Dash to Dock** extension (`dash-to-dock@micxgx.gmail.com`), configured under the `org.gnome.shell.extensions.dash-to-dock` schema (e.g. `click-action = 'focus-or-appspread'` to fan out all of an app's windows on dock click). Append new tweaks as sections in that file.
+Native-Linux desktop UX customizations, applied via `gsettings` (stored in dconf, so they persist across reboots — nothing here is symlinked or sourced). **`fedora/gnome-tweaks.md`** is the running record of each tweak with the exact apply/verify/rollback commands. Current environment: Fedora, GNOME Shell 50.2, Wayland; the dock is the **Dash to Dock** extension (`dash-to-dock@micxgx.gmail.com`), configured under the `org.gnome.shell.extensions.dash-to-dock` schema (e.g. `click-action = 'focus-or-appspread'` to fan out all of an app's windows on dock click). Append new tweaks as sections in that file. **`fedora/wezterm.md`** separately records the WezTerm setup (live config `~/.config/wezterm/wezterm.lua`, not tracked here): hardware-accel front end, `enable_wayland = false` for fractional scaling, and font/colors matched to the Ptyxis default terminal (Adwaita Mono 11 + GNOME dark palette).
 
 ## Conventions when editing here
 
