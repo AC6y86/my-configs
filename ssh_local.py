@@ -16,6 +16,7 @@ HOSTNAME_MAP = {
 # Default usernames for specific hostnames
 DEFAULT_USERNAMES = {
     "devserver": "joepaley",
+    "statfink": "joepaley",
 }
 
 def get_hostname():
@@ -113,39 +114,27 @@ def connect_to_server(username, hostname):
         cache[hostname] = username
         save_username_cache(cache)
 
+    target = f"{username}@{resolved_hostname}"
+
+    # Probe auth non-interactively so the username can be cached before the
+    # interactive session starts — Ctrl-C'ing out of the session must not lose it
+    probe = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", target, "true"]
+    if subprocess.run(probe).returncode != 0:
+        print(f"Key auth failed for {target}")
+        print("Running ssh-copy-id to copy public key...")
+        subprocess.run(["ssh-copy-id", target], check=True)
+
+    cache_username(username, hostname)
+    add_ssh_config_entry(hostname, resolved_hostname, username)
     try:
-        # Attempt to SSH into the server
-        subprocess.run(["ssh", "-o", "BatchMode=yes", f"{username}@{resolved_hostname}"], check=True)
-        cache_username(username, hostname)  # Cache username after successful connection
-        add_ssh_config_entry(hostname, resolved_hostname, username)
-        try:
-            subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
-            print("Called sync_ssh_to_windows_symlink.sh after successful SSH and config update.")
-        except Exception as e:
-            print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
-    except subprocess.CalledProcessError as e:
-        if e.returncode == 255:  # Permission denied
-            print(f"Permission denied for {username}@{resolved_hostname}")
-            print("Running ssh-copy-id to copy public key...")
-            subprocess.run(["ssh-copy-id", f"{username}@{resolved_hostname}"], check=True)
-            print("Trying SSH again...")
-            subprocess.run(["ssh", "-o", "BatchMode=yes", f"{username}@{resolved_hostname}"], check=True)
-            cache_username(username, hostname)  # Cache username after successful connection
-            add_ssh_config_entry(hostname, resolved_hostname, username)
-            try:
-                subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
-                print("Called sync_ssh_to_windows_symlink.sh after successful SSH and config update.")
-            except Exception as e:
-                print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
-        else:
-            cache_username(username, hostname)  # Connection was successful, cache it
-            add_ssh_config_entry(hostname, resolved_hostname, username)
-            try:
-                subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
-                print("Called sync_ssh_to_windows_symlink.sh after successful SSH and config update.")
-            except Exception as e:
-                print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
-            print(f"SSH session exited with code {e.returncode}")
+        subprocess.run(["/home/joepaley/my-configs/sync_ssh_to_windows_symlink.sh"], check=True)
+        print("Called sync_ssh_to_windows_symlink.sh after successful SSH and config update.")
+    except Exception as e:
+        print(f"Failed to call sync_ssh_to_windows_symlink.sh: {e}")
+
+    result = subprocess.run(["ssh", "-o", "BatchMode=yes", target])
+    if result.returncode != 0:
+        print(f"SSH session exited with code {result.returncode}")
 
 def main():
     try:
